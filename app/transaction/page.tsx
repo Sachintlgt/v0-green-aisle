@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
 import { Leaf, CreditCard, Truck, Calendar, Clock } from "lucide-react"
+import LogoutButton from "@/components/ui/logout-button"
 
 export default function TransactionPage() {
   return (
@@ -45,6 +46,7 @@ export default function TransactionPage() {
               />
               <span className="sr-only">User menu</span>
             </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>

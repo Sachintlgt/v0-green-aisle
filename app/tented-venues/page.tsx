@@ -7,6 +7,7 @@ import { Leaf, Search, Filter, Calendar, MapPin, Users } from "lucide-react"
 import { TentedVenueCard } from "@/components/tented-venue-card"
 import { CostSharingCalculator } from "@/components/cost-sharing-calculator"
 import { AccountCreatedAlert } from "@/components/account-created-alert"
+import LogoutButton from "@/components/ui/logout-button"
 
 export default function TentedVenuesPage() {
   return (
@@ -48,6 +49,7 @@ export default function TentedVenuesPage() {
               />
               <span className="sr-only">User menu</span>
             </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>

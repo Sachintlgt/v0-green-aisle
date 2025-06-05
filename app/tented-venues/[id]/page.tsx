@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { CostSharingCalculator } from "@/components/cost-sharing-calculator"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import LogoutButton from "@/components/ui/logout-button"
 
 export default function TentedVenueDetailPage({ params }: { params: { id: string } }) {
   // In a real application, you would fetch the venue data based on the ID
@@ -97,6 +98,7 @@ export default function TentedVenueDetailPage({ params }: { params: { id: string
               />
               <span className="sr-only">User menu</span>
             </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>

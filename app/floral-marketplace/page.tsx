@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Leaf, Search, Filter } from "lucide-react"
 import { FloralCard } from "@/components/floral-card"
+import LogoutButton from "@/components/ui/logout-button"
 
 export default function FloralMarketplace() {
   return (
@@ -41,6 +42,7 @@ export default function FloralMarketplace() {
               />
               <span className="sr-only">User menu</span>
             </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>

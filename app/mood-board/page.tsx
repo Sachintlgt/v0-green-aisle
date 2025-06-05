@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Leaf, Search, Filter, Plus, Grid, Columns } from "lucide-react"
 import { MoodBoardGallery } from "@/components/mood-board-gallery"
+import LogoutButton from "@/components/ui/logout-button"
 
 export default function MoodBoard() {
   return (
@@ -47,6 +48,7 @@ export default function MoodBoard() {
               />
               <span className="sr-only">User menu</span>
             </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>
