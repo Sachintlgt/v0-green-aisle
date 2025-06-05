@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Leaf, Search, Filter } from "lucide-react"
 import { VendorCard } from "@/components/vendor-card"
+import LogoutButton from "@/components/ui/logout-button"
 
 export default function VendorCoordination() {
   return (
@@ -44,6 +45,7 @@ export default function VendorCoordination() {
               />
               <span className="sr-only">User menu</span>
             </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>

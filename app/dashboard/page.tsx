@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Leaf, Calendar, Flower2, Users, Settings } from "lucide-react"
+import LogoutButton from "@/components/ui/logout-button"
 
 export default function Dashboard() {
   return (
@@ -33,6 +34,8 @@ export default function Dashboard() {
             <Link href="/mood-board" className="text-sm font-medium text-muted-foreground hover:text-foreground">
               Mood Board
             </Link>
+
+            
           </nav>
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="rounded-full">
@@ -45,6 +48,7 @@ export default function Dashboard() {
               />
               <span className="sr-only">User menu</span>
             </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>
