@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -18,16 +18,26 @@ import { Switch } from "@/components/ui/switch"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/contexts/auth-context"
 import { supabase } from "@/lib/supabase"
+import { userSignUp } from "@/services/auth.service"
+import { Checkbox } from "@/components/ui/checkbox"
+import DropZoneCard from "@/components/dropzone-card"
+import AutoCompleteLocation from "@/components/auto-complete-location"
+import { FileWithPath } from "react-dropzone"
+import { uploadAvenueToBucket, } from "@/services/bucket.service"
+import { addVenue } from "@/services/db.service"
+import { AddVenueParams } from "@/types/db"
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const { signUp } = useAuth()
+  const { signUp, user, setTriggerAuthUseEffect } = useAuth()
   const [date, setDate] = useState<Date>()
   const [step, setStep] = useState(1)
   const [userType, setUserType] = useState<"couple" | "vendor">("couple")
   const [exploringVenues, setExploringVenues] = useState(false)
-  const [location, setLocation] = useState("")
-  const [guestCount, setGuestCount] = useState("")
+  const [location, setLocation] = useState<any>()
+  const [isTented, setIsTented] = useState<boolean>(false);
+  const [guestCount, setGuestCount] = useState("");
+  const [files, setFiles] = useState<FileWithPath[]>([]);
 
   // Account information
   const [name, setName] = useState("")
@@ -42,7 +52,7 @@ export default function OnboardingPage() {
 
   // Loading and error states
   const [isLoading, setIsLoading] = useState(false)
-  const [formError, setFormError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Validation states
   const [errors, setErrors] = useState<{
@@ -70,9 +80,9 @@ export default function OnboardingPage() {
       newErrors.email = "Please enter a valid email address"
     }
 
-    if (!exploringVenues && !location.trim()) {
-      newErrors.location = "Location is required when not exploring venues"
-    }
+    // if (!exploringVenues && !location.trim()) {
+    //   newErrors.location = "Location is required when not exploring venues"
+    // }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -119,30 +129,17 @@ export default function OnboardingPage() {
 
     setIsLoading(true)
     setFormError(null)
-
+    setTriggerAuthUseEffect(prev=> !prev);
+    
     try {
-      // 1. Create the user account with Supabase Auth
-      const { error: signUpError } = await signUp(email, password, {
-        full_name: name,
-        user_type: userType,
-      })
-
-      if (signUpError) throw signUpError
-
-      // 2. Create the profile record
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: (await supabase.auth.getUser()).data.user?.id,
-        full_name: name,
-        user_type: userType,
-        location: location || null,
-      })
-
-      if (profileError) throw profileError
+      await userSignUp({ signUp, email, password, userType, name});
+      const userId =  (await supabase.auth.getUser()).data.user?.id
+      
 
       // 3. If user is a couple, create a wedding record
       if (userType === "couple") {
         const { error: weddingError } = await supabase.from("weddings").insert({
-          couple_id: (await supabase.auth.getUser()).data.user?.id,
+          couple_id: userId,
           date: date ? date.toISOString() : null,
           guest_count: guestCount ? Number.parseInt(guestCount) : null,
           is_exploring_venues: exploringVenues,
@@ -153,10 +150,27 @@ export default function OnboardingPage() {
         if (weddingError) throw weddingError
       }
 
+      // if couple where not exploring then only they can create the venue
+      // if(!exploringVenues){
+        
+        let venueObject :AddVenueParams = {
+          formattedAddress: location.formattedAddress,
+          lat: location.latitude,
+          long: location.longitude,
+          country: location.country,
+          state: location.state,
+          city: location.city,
+          addresslabel: location.addressLabel,
+          capacity: +guestCount,
+          is_tented: isTented
+        }
+        await addVenue(venueObject);
+      // }
+
       // 4. If user is a vendor, create a vendor record
       if (userType === "vendor") {
         const { error: vendorError } = await supabase.from("vendors").insert({
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: userId,
           business_name: businessName,
           business_type: businessType,
           service_area: serviceArea,
@@ -164,6 +178,9 @@ export default function OnboardingPage() {
         })
 
         if (vendorError) throw vendorError
+      }
+      if(userId){
+        files.map(async(file)=> await uploadAvenueToBucket(file, userId) )
       }
 
       // Redirect to appropriate page based on user selection
@@ -239,8 +256,8 @@ export default function OnboardingPage() {
                   <CardDescription>Let us know how you'll be using Green Aisle.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Tabs defaultValue="couple" onValueChange={(value) => setUserType(value as "couple" | "vendor")}>
-                    <TabsList className="grid w-full grid-cols-2">
+                  <Tabs defaultValue={userType} onValueChange={(value) => setUserType(value as "couple" | "vendor")}>
+                    <TabsList className="griLabeld w-full grid-cols-2">
                       <TabsTrigger value="couple">Couple Planning a Wedding</TabsTrigger>
                       <TabsTrigger value="vendor">Wedding Vendor</TabsTrigger>
                     </TabsList>
@@ -359,27 +376,36 @@ export default function OnboardingPage() {
                           </div>
 
                           <div className="grid gap-2">
-                            <Label htmlFor="location">Wedding Location</Label>
-                            <Input
-                              id="location"
-                              placeholder="Enter city, state or venue name"
-                              value={location}
-                              onChange={(e) => setLocation(e.target.value)}
-                              className={errors.location ? "border-red-500" : ""}
-                            />
-                            {errors.location && <p className="text-xs text-red-500">{errors.location}</p>}
+                            {/* <Label htmlFor="location">Wedding Location</Label> */}
+                            <AutoCompleteLocation setLocation={setLocation} />
                           </div>
+                          <div className="flex">
+                            <Checkbox
+                              id="tented"
+                              checked={isTented}
+                              onCheckedChange={(checked)=> {setIsTented(checked === true)}}
+                              className="bg-white border border-gray-400"
+                            />
+                            <Label htmlFor="tented" className="pl-2 inline-block">Whether the venue is tented? <span className="text-red-700">*</span></Label>
+                          </div>
+                          {
+                            isTented &&
+                            <>
+                            <DropZoneCard setFiles={setFiles}/>
+                            </>
+                           }
                         </>
                       ) : (
                         <div className="space-y-4">
                           <div className="grid gap-2">
-                            <Label htmlFor="general-location">General Location</Label>
+                            {/* <Label htmlFor="general-location">General Location</Label>
                             <Input
                               id="general-location"
                               placeholder="Enter city or region to explore"
                               value={location}
                               onChange={(e) => setLocation(e.target.value)}
-                            />
+                            /> */}
+                            <AutoCompleteLocation setLocation={setLocation} />
                           </div>
 
                           <Card className="bg-green-50 border-green-200">

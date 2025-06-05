@@ -2,12 +2,12 @@
 
 import type React from "react"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react"
 import type { Session, User } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
-type AuthContextType = {
+export type AuthContextType = {
   user: User | null
   session: Session | null
   isLoading: boolean
@@ -15,6 +15,7 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: any }>
+  setTriggerAuthUseEffect: Dispatch<SetStateAction<boolean>>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -23,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [triggerAuthUseEffect, setTriggerAuthUseEffect ] = useState(true);
   const router = useRouter()
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [router])
+  }, [router, triggerAuthUseEffect])
 
   const signUp = async (email: string, password: string, metadata: any) => {
     const { error } = await supabase.auth.signUp({
@@ -96,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signOut,
     resetPassword,
+    setTriggerAuthUseEffect,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
