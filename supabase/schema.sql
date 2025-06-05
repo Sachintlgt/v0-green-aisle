@@ -570,3 +570,51 @@ CREATE TRIGGER update_transactions_modtime
 CREATE TRIGGER update_notifications_modtime
     BEFORE UPDATE ON notifications
     FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+
+
+#custom function for rpc to  get minmum to maximum radiums miles with range
+CREATE OR REPLACE FUNCTION get_venues_in_radius(
+  center_lat DOUBLE PRECISION,
+  center_lon DOUBLE PRECISION,
+  min_radius DOUBLE PRECISION,
+  max_radius DOUBLE PRECISION
+)
+RETURNS TABLE (
+  id UUID,
+  name TEXT,
+  address TEXT,
+  city TEXT,
+  state TEXT,
+  zip TEXT,
+  country TEXT,
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION,
+  capacity INTEGER,
+  description TEXT,
+  amenities JSONB,
+  is_tented BOOLEAN,
+  price_range TEXT,
+  distance DOUBLE PRECISION
+)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    v.*,
+    (
+      3958.8 * acos(
+        cos(radians(center_lat)) * cos(radians(v.latitude)) *
+        cos(radians(v.longitude) - radians(center_lon)) +
+        sin(radians(center_lat)) * sin(radians(v.latitude))
+      )
+    ) AS distance
+  FROM venues v
+  WHERE (
+    3958.8 * acos(
+      cos(radians(center_lat)) * cos(radians(v.latitude)) *
+      cos(radians(v.longitude) - radians(center_lon)) +
+      sin(radians(center_lat)) * sin(radians(v.latitude))
+    )
+  ) BETWEEN min_radius AND max_radius;
+END;
+$$ LANGUAGE plpgsql;
