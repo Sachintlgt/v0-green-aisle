@@ -6,7 +6,8 @@ export async function userSignUp({
   email,
   password,
   userType,
-  name
+  name,
+  location
 }: userSignUpParams) {
   try {
     // 1. Create the user account with Supabase Auth
