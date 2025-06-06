@@ -14,4 +14,24 @@ export interface AddVenueParams {
   amenities?: Record<string, any> | null;
   is_tented?: boolean;
   price_range?: PriceRange;
+  created_by:string
+}
+
+export interface SearchVenueByGeoLocationParams {
+  longitude: number;
+  latitude: number;
+  min_radius_by_miles?: number;
+  max_radius_by_miles: number;
+}
+
+export interface FileObject {
+  name: string
+  bucket_id: string
+  owner: string
+  id: string
+  updated_at: string
+  created_at: string
+  last_accessed_at: string
+  metadata: Record<string, any>
+  buckets: Bucket
 }

@@ -132,7 +132,7 @@ export default function OnboardingPage() {
     setTriggerAuthUseEffect(prev=> !prev);
     
     try {
-      await userSignUp({ signUp, email, password, userType, name});
+      await userSignUp({ signUp, email, password, userType, name, location: location.formattedAddress});
       const userId =  (await supabase.auth.getUser()).data.user?.id
       
 
@@ -143,7 +143,7 @@ export default function OnboardingPage() {
           date: date ? date.toISOString() : null,
           guest_count: guestCount ? Number.parseInt(guestCount) : null,
           is_exploring_venues: exploringVenues,
-          general_location: location || null,
+          general_location: location.formattedAddress || null,
           status: "planning",
         })
 
@@ -162,7 +162,8 @@ export default function OnboardingPage() {
           city: location.city,
           addresslabel: location.addressLabel,
           capacity: +guestCount,
-          is_tented: isTented
+          is_tented: isTented,
+          created_by: userId as string
         }
         await addVenue(venueObject);
       // }
