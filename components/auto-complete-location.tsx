@@ -20,7 +20,7 @@ const AutoCompleteLocation = ({
         onSelection: (address) => {
           setLocation(address);
         },
-        placeholder: "Avenue location ...",
+        placeholder: "Venue address ...",
         
       });
     }

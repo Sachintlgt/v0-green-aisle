@@ -105,7 +105,7 @@ const mockMatches: CoupleMatch[] = [
 export default function CoupleMatchingPage() {
   const { user, signOut } = useAuth();
   const [matches, setMatches] = useState<CoupleMatch[]>(mockMatches);
-  const [filterDistance, setFilterDistance] = useState<string>("8000");
+  const [filterDistance, setFilterDistance] = useState<string>("800");
   const [filterItems, setFilterItems] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [newMatch, setNewMatch] = useState<any>([]);
@@ -140,6 +140,7 @@ export default function CoupleMatchingPage() {
     []
   );
 
+
   useEffect(() => {
     /**
      * step1; get userProfile,
@@ -154,7 +155,7 @@ export default function CoupleMatchingPage() {
           // currently we are supporting only search by city we will update further based on the needs
           if (searchTerm) {
             clientVenue = await getVenueByCity(searchTerm);
-            clientVenue.filter(
+            clientVenue = clientVenue.filter(
               (obj: any) => obj.created_by && obj.created_by !== user.id
             );
           }
@@ -165,6 +166,7 @@ export default function CoupleMatchingPage() {
               latitude: clientVenue[0].latitude,
               max_radius_by_miles: +filterDistance,
             });
+
 
             // here we get miles and venue on the radius
             const result = searchVenueData.filter(
@@ -297,7 +299,7 @@ export default function CoupleMatchingPage() {
                       <SelectValue placeholder="Distance" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="8000">All Distances</SelectItem>
+                      <SelectItem value="800">All Distances</SelectItem>
                       <SelectItem value="15">Within 15 miles</SelectItem>
                       <SelectItem value="25">Within 25 miles</SelectItem>
                     </SelectContent>
@@ -329,7 +331,7 @@ export default function CoupleMatchingPage() {
 
           {/* Match Results */}
         
-            <>
+            {Loading ? <div className="w-[70vw] h-[70vh] grid place-items-center "> <div className="loader"></div></div>: <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {newMatch.map((match: any) => (
                   <Card
@@ -338,7 +340,7 @@ export default function CoupleMatchingPage() {
                   >
                     <div className="relative aspect-video w-full overflow-hidden">
                       <Image
-                        src={match.files[0]}
+                        src={match.files[0] ?? '/placeholder-image.jpg'}
                         alt={`${match.userName} wedding`}
                         width={400}
                         height={250}
@@ -440,7 +442,7 @@ export default function CoupleMatchingPage() {
                   </CardContent>
                 </Card>
               )}
-            </>
+            </>}
           
 
           {/* Info Cards */}
