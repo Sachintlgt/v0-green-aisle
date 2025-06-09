@@ -7,45 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Leaf, Search, Filter } from "lucide-react"
 import { FloralCard } from "@/components/floral-card"
 import LogoutButton from "@/components/ui/logout-button"
+import Navbar from "@/components/nav-bar"
 
 export default function FloralMarketplace() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-green-600" />
-            <span className="text-xl font-semibold">Green Aisle</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Dashboard
-            </Link>
-            <Link href="/floral-marketplace" className="text-sm font-medium text-foreground">
-              Floral Marketplace
-            </Link>
-            <Link href="/vendors" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Vendors
-            </Link>
-            <Link href="/mood-board" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Mood Board
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Image
-                src="/placeholder.svg?height=32&width=32"
-                width="32"
-                height="32"
-                className="rounded-full"
-                alt="Avatar"
-              />
-              <span className="sr-only">User menu</span>
-            </Button>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
+      <Navbar/>
 
       <main className="flex-1 py-6 bg-green-50">
         <div className="container">

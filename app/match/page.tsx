@@ -43,6 +43,8 @@ import {
 } from "@/services/db.service";
 import { listAvenueFiles } from "@/services/bucket.service";
 import debounce from "lodash.debounce";
+import LogoutButton from "@/components/ui/logout-button";
+import Navbar from "@/components/nav-bar";
 
 interface CoupleMatch {
   id: string;
@@ -105,7 +107,7 @@ const mockMatches: CoupleMatch[] = [
 export default function CoupleMatchingPage() {
   const { user, signOut } = useAuth();
   const [matches, setMatches] = useState<CoupleMatch[]>(mockMatches);
-  const [filterDistance, setFilterDistance] = useState<string>("800");
+  const [filterDistance, setFilterDistance] = useState<string>("10");
   const [filterItems, setFilterItems] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [newMatch, setNewMatch] = useState<any>([]);
@@ -207,52 +209,7 @@ export default function CoupleMatchingPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-green-600" />
-            <span className="text-xl font-semibold">Green Aisle</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="/dashboard"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/floral-marketplace"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Floral Marketplace
-            </Link>
-            <Link
-              href="/vendor-coordination"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Vendors
-            </Link>
-            <Link
-              href="/mood-board"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Mood Board
-            </Link>
-            <Link
-              href="/couple-matching"
-              className="text-sm font-medium text-foreground"
-            >
-              Couple Matching
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <Button variant="outline" onClick={signOut}>
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar/>
 
       <main className="flex-1 py-6 bg-green-50">
        <div className="container">
@@ -299,7 +256,7 @@ export default function CoupleMatchingPage() {
                       <SelectValue placeholder="Distance" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="800">All Distances</SelectItem>
+                      <SelectItem value="10">All Distances</SelectItem>
                       <SelectItem value="15">Within 15 miles</SelectItem>
                       <SelectItem value="25">Within 25 miles</SelectItem>
                     </SelectContent>

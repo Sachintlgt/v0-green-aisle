@@ -1,57 +1,20 @@
+"use client"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Leaf, Calendar, Flower2, Users, Settings } from "lucide-react"
+import { Leaf, Calendar, Flower2, Users, Settings, Heart, ChevronRight, MessageCircle, FileText } from "lucide-react"
 import LogoutButton from "@/components/ui/logout-button"
+import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
+import Navbar from "@/components/nav-bar"
 
 export default function Dashboard() {
+  const router = useRouter();
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-green-600" />
-            <span className="text-xl font-semibold">Green Aisle</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-sm font-medium text-foreground">
-              Dashboard
-            </Link>
-            <Link
-              href="/floral-marketplace"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Floral Marketplace
-            </Link>
-            <Link
-              href="/vendor-coordination"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Vendors
-            </Link>
-            <Link href="/mood-board" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Mood Board
-            </Link>
-
-            
-          </nav>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Image
-                src="/placeholder.svg?height=32&width=32"
-                width="32"
-                height="32"
-                className="rounded-full"
-                alt="Avatar"
-              />
-              <span className="sr-only">User menu</span>
-            </Button>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
+      <Navbar/>
 
       <main className="flex-1 py-6 bg-green-50">
         <div className="container">
@@ -107,7 +70,6 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-
           <Tabs defaultValue="overview">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -168,17 +130,81 @@ export default function Dashboard() {
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg mb-4">
                       <Image
                         src="/placeholder.svg?height=400&width=600"
-                        alt="Floral arrangements"
+                        alt="Couple matching"
                         width={600}
                         height={400}
                         className="object-cover"
                       />
                     </div>
                     <Button asChild className="w-full">
-                      <Link href="/floral-marketplace">Browse Florals</Link>
+                      <Link href="/match">Browse Florals</Link>
                     </Button>
                   </CardContent>
                 </Card>
+                 <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/match')}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-green-600" />
+                    Couple Matching
+                  </CardTitle>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <CardDescription>
+                  Find couples with similar wedding dates and locations for resource sharing
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">3 new matches</span>
+                  <Badge variant="secondary">Active</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/messages')}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageCircle className="h-5 w-5 text-green-600" />
+                    Messages
+                  </CardTitle>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <CardDescription>
+                  Chat with other couples and vendors about arrangements
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">2 unread messages</span>
+                  <Badge variant="destructive">2</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/agreements')}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-green-600" />
+                    Agreements
+                  </CardTitle>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <CardDescription>
+                  Manage contracts and agreements with vendors and other couples
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">1 pending signature</span>
+                  <Badge variant="outline">Pending</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+                
               </div>
             </TabsContent>
             <TabsContent value="timeline" className="mt-4">
