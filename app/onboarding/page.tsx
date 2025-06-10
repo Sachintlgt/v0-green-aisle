@@ -135,6 +135,19 @@ export default function OnboardingPage() {
       await userSignUp({ signUp, email, password, userType, name, location: location.formattedAddress});
       const userId =  (await supabase.auth.getUser()).data.user?.id
       
+      let venueObject :AddVenueParams = {
+        formattedAddress: location.formattedAddress,
+        lat: location.latitude,
+        long: location.longitude,
+        country: location.country,
+        state: location.state,
+        city: location.city,
+        addresslabel: location.addressLabel,
+        capacity: +guestCount,
+        is_tented: isTented,
+        created_by: userId as string
+      }
+      const venueData = await addVenue(venueObject);
 
       // 3. If user is a couple, create a wedding record
       if (userType === "couple") {
@@ -145,6 +158,7 @@ export default function OnboardingPage() {
           is_exploring_venues: exploringVenues,
           general_location: location.formattedAddress || null,
           status: "planning",
+          venue_id: venueData[0].id
         })
 
         if (weddingError) throw weddingError
@@ -153,19 +167,7 @@ export default function OnboardingPage() {
       // if couple where not exploring then only they can create the venue
       // if(!exploringVenues){
         
-        let venueObject :AddVenueParams = {
-          formattedAddress: location.formattedAddress,
-          lat: location.latitude,
-          long: location.longitude,
-          country: location.country,
-          state: location.state,
-          city: location.city,
-          addresslabel: location.addressLabel,
-          capacity: +guestCount,
-          is_tented: isTented,
-          created_by: userId as string
-        }
-        await addVenue(venueObject);
+   
       // }
 
       // 4. If user is a vendor, create a vendor record

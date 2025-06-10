@@ -27,7 +27,7 @@ export async function addVenue({
    * state = state is which is optional on the radar
    */
   try {
-    const { error } = await supabase.from("venues").insert({
+    const { data ,  error } = await supabase.from("venues").insert({
       name: addresslabel,
       city,
       zip,
@@ -42,8 +42,10 @@ export async function addVenue({
       latitude: lat,
       longitude: long,
       created_by,
-    });
+    }).select();
     if (error) throw error;
+    console.log(data)
+    return data;
   } catch (error) {
     throw error;
   }

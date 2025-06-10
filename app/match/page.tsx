@@ -107,7 +107,7 @@ const mockMatches: CoupleMatch[] = [
 export default function CoupleMatchingPage() {
   const { user, signOut } = useAuth();
   const [matches, setMatches] = useState<CoupleMatch[]>(mockMatches);
-  const [filterDistance, setFilterDistance] = useState<string>("10");
+  const [filterDistance, setFilterDistance] = useState<string>("5");
   const [filterItems, setFilterItems] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [newMatch, setNewMatch] = useState<any>([]);
@@ -256,9 +256,9 @@ export default function CoupleMatchingPage() {
                       <SelectValue placeholder="Distance" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="10">All Distances</SelectItem>
-                      <SelectItem value="15">Within 15 miles</SelectItem>
-                      <SelectItem value="25">Within 25 miles</SelectItem>
+                      <SelectItem value="5">All Distances</SelectItem>
+                      <SelectItem value="5">Within 5 miles</SelectItem>
+                      <SelectItem value="10">Within 10 miles</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
