@@ -98,11 +98,37 @@ export async function getProfileById(authId: string) {
   }
 }
 
+export async function getUpcomingWeddings(authId: string, weddingsDate: string) {
+  try {
+    const bufferDays = 3;
+
+    const { data, error } = await supabase
+      .from("weddings")
+      .select("date, guest_count, updated_at")
+      .eq("couple_id", authId)
+      .gte("date", new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()) // at least 2 days in future
+      .or(
+        `date.gte.${new Date(
+          new Date(weddingsDate).getTime() - bufferDays * 24 * 60 * 60 * 1000
+        ).toISOString()},date.lte.${new Date(
+          new Date(weddingsDate).getTime() + bufferDays * 24 * 60 * 60 * 1000
+        ).toISOString()}`
+      );
+
+    if (error) throw error; 
+    return (data.length === 0)? false:  data
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
 export async function getWeddingDate(authId: string) {
   try {
     const { data, error } = await supabase
       .from("weddings")
-      .select("date, guest_count")
+      .select("date, guest_count, updated_at")
       .eq("couple_id", authId);
     if (error) throw error;
     return data;
@@ -123,4 +149,23 @@ export async function getVenueByCity(city: string) {
     throw error;
   }
 }
+
+export async function searchNearByWedding(lat: number, long:number, weddingDate: string, max_distance: number = 5){
+  try {
+    console.log({ long, lat, weddingDate, max_distance})
+    const { data, error } = await supabase.rpc('search_weddings_by_location_and_date', {
+      client_lat: lat,
+      client_lon: long,
+      target_date: weddingDate,
+      max_distance_miles: max_distance,
+      buffer_days: 2
+    });
+    console.log({data})
+    if(error) throw error
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 

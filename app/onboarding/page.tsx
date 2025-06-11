@@ -1,141 +1,166 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CalendarIcon, Leaf, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { Switch } from "@/components/ui/switch"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useAuth } from "@/contexts/auth-context"
-import { supabase } from "@/lib/supabase"
-import { userSignUp } from "@/services/auth.service"
-import { Checkbox } from "@/components/ui/checkbox"
-import DropZoneCard from "@/components/dropzone-card"
-import AutoCompleteLocation from "@/components/auto-complete-location"
-import { FileWithPath } from "react-dropzone"
-import { uploadAvenueToBucket, } from "@/services/bucket.service"
-import { addVenue } from "@/services/db.service"
-import { AddVenueParams } from "@/types/db"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  CalendarIcon,
+  Leaf,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
+} from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/auth-context";
+import { supabase } from "@/lib/supabase";
+import { userSignUp } from "@/services/auth.service";
+import { Checkbox } from "@/components/ui/checkbox";
+import DropZoneCard from "@/components/dropzone-card";
+import AutoCompleteLocation from "@/components/auto-complete-location";
+import { FileWithPath } from "react-dropzone";
+import { uploadAvenueToBucket } from "@/services/bucket.service";
+import { addVenue } from "@/services/db.service";
+import { AddVenueParams } from "@/types/db";
+import AddressAutoFieldEdit from "@/components/address-field-distribution";
 
 export default function OnboardingPage() {
-  const router = useRouter()
-  const { signUp, user, setTriggerAuthUseEffect } = useAuth()
-  const [date, setDate] = useState<Date>()
-  const [step, setStep] = useState(1)
-  const [userType, setUserType] = useState<"couple" | "vendor">("couple")
-  const [exploringVenues, setExploringVenues] = useState(false)
-  const [location, setLocation] = useState<any>()
+  const router = useRouter();
+  const { signUp, user, setTriggerAuthUseEffect } = useAuth();
+  const [date, setDate] = useState<Date>();
+  const [step, setStep] = useState(1);
+  const [userType, setUserType] = useState<"couple" | "vendor">("couple");
+  const [exploringVenues, setExploringVenues] = useState(false);
+  const [location, setLocation] = useState<any>(null);
   const [isTented, setIsTented] = useState<boolean>(false);
   const [guestCount, setGuestCount] = useState("");
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
   // Account information
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   // Business information (for vendors)
-  const [businessName, setBusinessName] = useState("")
-  const [businessType, setBusinessType] = useState("florist")
-  const [serviceArea, setServiceArea] = useState("")
+  const [businessName, setBusinessName] = useState("");
+  const [businessType, setBusinessType] = useState("florist");
+  const [serviceArea, setServiceArea] = useState("");
 
   // Loading and error states
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   // Validation states
   const [errors, setErrors] = useState<{
-    name?: string
-    email?: string
-    location?: string
-    password?: string
-    confirmPassword?: string
-  }>({})
+    name?: string;
+    email?: string;
+    location?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
 
   const validateStep2 = () => {
     const newErrors: {
-      name?: string
-      email?: string
-      location?: string
-    } = {}
+      name?: string;
+      email?: string;
+      location?: string;
+    } = {};
 
     if (!name.trim()) {
-      newErrors.name = "Name is required"
+      newErrors.name = "Name is required";
     }
 
     if (!email.trim()) {
-      newErrors.email = "Email is required"
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Please enter a valid email address"
+      newErrors.email = "Please enter a valid email address";
     }
 
     // if (!exploringVenues && !location.trim()) {
     //   newErrors.location = "Location is required when not exploring venues"
     // }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const validateStep3 = () => {
     const newErrors: {
-      password?: string
-      confirmPassword?: string
-    } = {}
+      password?: string;
+      confirmPassword?: string;
+    } = {};
 
     if (!password) {
-      newErrors.password = "Password is required"
+      newErrors.password = "Password is required";
     } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters"
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password"
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const nextStep = () => {
     if (step === 2 && !validateStep2()) {
-      return
+      return;
     }
 
     if (step === 3 && !validateStep3()) {
-      return
+      return;
     }
 
-    setStep(step + 1)
-  }
+    setStep(step + 1);
+  };
 
-  const prevStep = () => setStep(step - 1)
+  const prevStep = () => setStep(step - 1);
 
   const handleCreateAccount = async () => {
-    if (!validateStep3()) return
+    if (!validateStep3()) return;
 
-    setIsLoading(true)
-    setFormError(null)
-    setTriggerAuthUseEffect(prev=> !prev);
-    
+    setIsLoading(true);
+    setFormError(null);
+    setTriggerAuthUseEffect((prev) => !prev);
+
     try {
-      await userSignUp({ signUp, email, password, userType, name, location: location.formattedAddress});
-      const userId =  (await supabase.auth.getUser()).data.user?.id
-      
-      let venueObject :AddVenueParams = {
+      await userSignUp({
+        signUp,
+        email,
+        password,
+        userType,
+        name,
+        location: location.formattedAddress,
+      });
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+
+      let venueObject: AddVenueParams = {
         formattedAddress: location.formattedAddress,
         lat: location.latitude,
         long: location.longitude,
@@ -145,8 +170,8 @@ export default function OnboardingPage() {
         addresslabel: location.addressLabel,
         capacity: +guestCount,
         is_tented: isTented,
-        created_by: userId as string
-      }
+        created_by: userId as string,
+      };
       const venueData = await addVenue(venueObject);
 
       // 3. If user is a couple, create a wedding record
@@ -158,16 +183,15 @@ export default function OnboardingPage() {
           is_exploring_venues: exploringVenues,
           general_location: location.formattedAddress || null,
           status: "planning",
-          venue_id: venueData[0].id
-        })
+          venue_id: venueData[0].id,
+        });
 
-        if (weddingError) throw weddingError
+        if (weddingError) throw weddingError;
       }
 
       // if couple where not exploring then only they can create the venue
       // if(!exploringVenues){
-        
-   
+
       // }
 
       // 4. If user is a vendor, create a vendor record
@@ -178,27 +202,31 @@ export default function OnboardingPage() {
           business_type: businessType,
           service_area: serviceArea,
           subscription_tier: "free",
-        })
+        });
 
-        if (vendorError) throw vendorError
+        if (vendorError) throw vendorError;
       }
-      if(userId){
-        files.map(async(file)=> await uploadAvenueToBucket(file, userId) )
+      if (userId) {
+        files.map(async (file) => await uploadAvenueToBucket(file, userId));
       }
 
       // Redirect to appropriate page based on user selection
       if (exploringVenues) {
-        router.push("/tented-venues")
+        router.push("/tented-venues");
       } else {
-        router.push("/dashboard")
+        router.push("/dashboard");
       }
     } catch (error) {
-      console.error("Error creating account:", error)
-      setFormError(error instanceof Error ? error.message : "An error occurred during account creation")
+      console.error("Error creating account:", error);
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : "An error occurred during account creation"
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -214,9 +242,12 @@ export default function OnboardingPage() {
       <main className="flex-1 py-12 md:py-24 bg-green-50">
         <div className="container max-w-3xl">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">Get Started with Green Aisle</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Get Started with Green Aisle
+            </h1>
             <p className="text-muted-foreground mt-2">
-              Tell us about your wedding plans so we can help you create a sustainable celebration.
+              Tell us about your wedding plans so we can help you create a
+              sustainable celebration.
             </p>
           </div>
 
@@ -224,19 +255,39 @@ export default function OnboardingPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? "bg-green-600 text-white" : "bg-muted text-muted-foreground"}`}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                    step >= 1
+                      ? "bg-green-600 text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}
                 >
                   1
                 </div>
-                <div className={`h-1 w-12 ${step >= 2 ? "bg-green-600" : "bg-muted"}`} />
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? "bg-green-600 text-white" : "bg-muted text-muted-foreground"}`}
+                  className={`h-1 w-12 ${
+                    step >= 2 ? "bg-green-600" : "bg-muted"
+                  }`}
+                />
+                <div
+                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                    step >= 2
+                      ? "bg-green-600 text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}
                 >
                   2
                 </div>
-                <div className={`h-1 w-12 ${step >= 3 ? "bg-green-600" : "bg-muted"}`} />
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 3 ? "bg-green-600 text-white" : "bg-muted text-muted-foreground"}`}
+                  className={`h-1 w-12 ${
+                    step >= 3 ? "bg-green-600" : "bg-muted"
+                  }`}
+                />
+                <div
+                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                    step >= 3
+                      ? "bg-green-600 text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}
                 >
                   3
                 </div>
@@ -256,12 +307,21 @@ export default function OnboardingPage() {
               <>
                 <CardHeader>
                   <CardTitle>I am a...</CardTitle>
-                  <CardDescription>Let us know how you'll be using Green Aisle.</CardDescription>
+                  <CardDescription>
+                    Let us know how you'll be using Green Aisle.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Tabs defaultValue={userType} onValueChange={(value) => setUserType(value as "couple" | "vendor")}>
+                  <Tabs
+                    defaultValue={userType}
+                    onValueChange={(value) =>
+                      setUserType(value as "couple" | "vendor")
+                    }
+                  >
                     <TabsList className="griLabeld w-full grid-cols-2">
-                      <TabsTrigger value="couple">Couple Planning a Wedding</TabsTrigger>
+                      <TabsTrigger value="couple">
+                        Couple Planning a Wedding
+                      </TabsTrigger>
                       <TabsTrigger value="vendor">Wedding Vendor</TabsTrigger>
                     </TabsList>
                     <TabsContent value="couple" className="mt-6 space-y-4">
@@ -269,9 +329,14 @@ export default function OnboardingPage() {
                         <p>As a couple, you can:</p>
                         <ul className="list-disc pl-5 space-y-1 text-sm">
                           <li>Find vendors already booked near your venue</li>
-                          <li>Browse and reserve reusable floral arrangements</li>
+                          <li>
+                            Browse and reserve reusable floral arrangements
+                          </li>
                           <li>Create mood boards from previous weddings</li>
-                          <li>Coordinate with other couples for sustainable sharing</li>
+                          <li>
+                            Coordinate with other couples for sustainable
+                            sharing
+                          </li>
                         </ul>
                       </div>
                     </TabsContent>
@@ -280,7 +345,10 @@ export default function OnboardingPage() {
                         <p>As a vendor, you can:</p>
                         <ul className="list-disc pl-5 space-y-1 text-sm">
                           <li>List your services and availability</li>
-                          <li>Coordinate with multiple couples for back-to-back events</li>
+                          <li>
+                            Coordinate with multiple couples for back-to-back
+                            events
+                          </li>
                           <li>Manage floral arrangements for reuse</li>
                           <li>Showcase your sustainable wedding designs</li>
                         </ul>
@@ -289,7 +357,10 @@ export default function OnboardingPage() {
                   </Tabs>
                 </CardContent>
                 <CardFooter className="flex justify-end">
-                  <Button onClick={nextStep} className="bg-green-600 hover:bg-green-700">
+                  <Button
+                    onClick={nextStep}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
                     Continue
                   </Button>
                 </CardFooter>
@@ -300,7 +371,9 @@ export default function OnboardingPage() {
               <>
                 <CardHeader>
                   <CardTitle>
-                    {userType === "couple" ? "Wedding Details & Account" : "Business Information & Account"}
+                    {userType === "couple"
+                      ? "Wedding Details & Account"
+                      : "Business Information & Account"}
                   </CardTitle>
                   <CardDescription>
                     {userType === "couple"
@@ -320,7 +393,9 @@ export default function OnboardingPage() {
                         onChange={(e) => setName(e.target.value)}
                         className={errors.name ? "border-red-500" : ""}
                       />
-                      {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
+                      {errors.name && (
+                        <p className="text-xs text-red-500">{errors.name}</p>
+                      )}
                     </div>
 
                     <div className="grid gap-2">
@@ -333,7 +408,9 @@ export default function OnboardingPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         className={errors.email ? "border-red-500" : ""}
                       />
-                      {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
+                      {errors.email && (
+                        <p className="text-xs text-red-500">{errors.email}</p>
+                      )}
                     </div>
                   </div>
 
@@ -341,7 +418,9 @@ export default function OnboardingPage() {
                     <>
                       <div className="grid gap-2">
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="exploring-venues">I'm still exploring venue options</Label>
+                          <Label htmlFor="exploring-venues">
+                            I'm still exploring venue options
+                          </Label>
                           <Switch
                             id="exploring-venues"
                             checked={exploringVenues}
@@ -365,15 +444,24 @@ export default function OnboardingPage() {
                                   variant={"outline"}
                                   className={cn(
                                     "w-full justify-start text-left font-normal",
-                                    !date && "text-muted-foreground",
+                                    !date && "text-muted-foreground"
                                   )}
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {date ? format(date, "PPP") : <span>Select your wedding date</span>}
+                                  {date ? (
+                                    format(date, "PPP")
+                                  ) : (
+                                    <span>Select your wedding date</span>
+                                  )}
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+                                <Calendar
+                                  mode="single"
+                                  selected={date}
+                                  onSelect={setDate}
+                                  initialFocus
+                                />
                               </PopoverContent>
                             </Popover>
                           </div>
@@ -382,21 +470,36 @@ export default function OnboardingPage() {
                             {/* <Label htmlFor="location">Wedding Location</Label> */}
                             <AutoCompleteLocation setLocation={setLocation} />
                           </div>
+                          {location && (
+                            <div className="grid gap-2">
+                              <AddressAutoFieldEdit
+                                location={location}
+                                setLocation={setLocation}
+                              />
+                            </div>
+                          )}
                           <div className="flex">
                             <Checkbox
                               id="tented"
                               checked={isTented}
-                              onCheckedChange={(checked)=> {setIsTented(checked === true)}}
+                              onCheckedChange={(checked) => {
+                                setIsTented(checked === true);
+                              }}
                               className="bg-white border border-gray-400"
                             />
-                            <Label htmlFor="tented" className="pl-2 inline-block">Whether the venue is tented? <span className="text-red-700">*</span></Label>
+                            <Label
+                              htmlFor="tented"
+                              className="pl-2 inline-block"
+                            >
+                              Whether the venue is tented?{" "}
+                              <span className="text-red-700">*</span>
+                            </Label>
                           </div>
-                          {
-                            isTented &&
+                          {isTented && (
                             <>
-                            <DropZoneCard setFiles={setFiles}/>
+                              <DropZoneCard setFiles={setFiles} />
                             </>
-                           }
+                          )}
                         </>
                       ) : (
                         <div className="space-y-4">
@@ -410,20 +513,33 @@ export default function OnboardingPage() {
                             /> */}
                             <AutoCompleteLocation setLocation={setLocation} />
                           </div>
+                          {location && (
+                            <div className="grid gap-2">
+                              <AddressAutoFieldEdit
+                                location={location}
+                                setLocation={setLocation}
+                              />
+                            </div>
+                          )}
 
                           <Card className="bg-green-50 border-green-200">
                             <CardHeader className="pb-2">
-                              <CardTitle className="text-base">Explore Tented Venue Options</CardTitle>
+                              <CardTitle className="text-base">
+                                Explore Tented Venue Options
+                              </CardTitle>
                             </CardHeader>
                             <CardContent>
                               <p className="text-sm text-muted-foreground mb-3">
-                                Discover temporary tented venues with cost-sharing opportunities. Share expenses with
-                                other couples getting married around the same time.
+                                Discover temporary tented venues with
+                                cost-sharing opportunities. Share expenses with
+                                other couples getting married around the same
+                                time.
                               </p>
                               <Alert className="bg-green-100 border-green-200 mb-3">
                                 <AlertCircle className="h-4 w-4 text-green-600" />
                                 <AlertDescription className="text-green-800 text-xs">
-                                  Complete your account setup to browse available tented venues
+                                  Complete your account setup to browse
+                                  available tented venues
                                 </AlertDescription>
                               </Alert>
                             </CardContent>
@@ -456,7 +572,11 @@ export default function OnboardingPage() {
 
                       <div className="grid gap-2">
                         <Label htmlFor="business-type">Business Type</Label>
-                        <RadioGroup defaultValue="florist" value={businessType} onValueChange={setBusinessType}>
+                        <RadioGroup
+                          defaultValue="florist"
+                          value={businessType}
+                          onValueChange={setBusinessType}
+                        >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="florist" id="florist" />
                             <Label htmlFor="florist">Florist</Label>
@@ -492,7 +612,10 @@ export default function OnboardingPage() {
                   <Button variant="outline" onClick={prevStep}>
                     <ChevronLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
-                  <Button onClick={nextStep} className="bg-green-600 hover:bg-green-700">
+                  <Button
+                    onClick={nextStep}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
                     Continue <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardFooter>
@@ -503,7 +626,9 @@ export default function OnboardingPage() {
               <>
                 <CardHeader>
                   <CardTitle>Complete Your Account</CardTitle>
-                  <CardDescription>Set a password to secure your Green Aisle account.</CardDescription>
+                  <CardDescription>
+                    Set a password to secure your Green Aisle account.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-4 bg-green-50 rounded-lg border border-green-100 mb-4">
@@ -531,8 +656,12 @@ export default function OnboardingPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       className={errors.password ? "border-red-500" : ""}
                     />
-                    {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
-                    <p className="text-xs text-muted-foreground">Password must be at least 8 characters long</p>
+                    {errors.password && (
+                      <p className="text-xs text-red-500">{errors.password}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Password must be at least 8 characters long
+                    </p>
                   </div>
 
                   <div className="grid gap-2">
@@ -545,11 +674,19 @@ export default function OnboardingPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className={errors.confirmPassword ? "border-red-500" : ""}
                     />
-                    {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
+                    {errors.confirmPassword && (
+                      <p className="text-xs text-red-500">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                  <Button variant="outline" onClick={prevStep} disabled={isLoading}>
+                  <Button
+                    variant="outline"
+                    onClick={prevStep}
+                    disabled={isLoading}
+                  >
                     <ChevronLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
                   <Button
@@ -566,5 +703,5 @@ export default function OnboardingPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

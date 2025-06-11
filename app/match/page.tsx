@@ -36,9 +36,11 @@ import {
 import { useAuth } from "@/contexts/auth-context";
 import {
   getProfileById,
+  getUpcomingWeddings,
   getVenueByAuthId,
   getVenueByCity,
   getWeddingDate,
+  searchNearByWedding,
   searchVenueByGeoLocation,
 } from "@/services/db.service";
 import { listAvenueFiles } from "@/services/bucket.service";
@@ -107,7 +109,7 @@ const mockMatches: CoupleMatch[] = [
 export default function CoupleMatchingPage() {
   const { user, signOut } = useAuth();
   const [matches, setMatches] = useState<CoupleMatch[]>(mockMatches);
-  const [filterDistance, setFilterDistance] = useState<string>("5");
+  const [filterDistance, setFilterDistance] = useState<string>("6");
   const [filterItems, setFilterItems] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [newMatch, setNewMatch] = useState<any>([]);
@@ -142,7 +144,6 @@ export default function CoupleMatchingPage() {
     []
   );
 
-
   useEffect(() => {
     /**
      * step1; get userProfile,
@@ -154,6 +155,8 @@ export default function CoupleMatchingPage() {
         setLoading(true);
         if (user?.id) {
           let clientVenue = await getVenueByAuthId(user.id);
+          let clientWeddingDate = (await getWeddingDate(user.id))[0].date;
+
           // currently we are supporting only search by city we will update further based on the needs
           if (searchTerm) {
             clientVenue = await getVenueByCity(searchTerm);
@@ -169,11 +172,33 @@ export default function CoupleMatchingPage() {
               max_radius_by_miles: +filterDistance,
             });
 
+            const searchWeddingDate = await searchNearByWedding(
+              clientVenue[0].longitude,
+              clientVenue[0].latitude,
+              clientWeddingDate,
+              +filterDistance
+            );
+            console.log({ searchWeddingDate });
 
             // here we get miles and venue on the radius
             const result = searchVenueData.filter(
               (obj: any) => Boolean(obj.created_by) && obj.created_by != user.id
             );
+
+            function getUpdatedDate(updatedAt: string) {
+              const updatedDate = new Date(updatedAt);
+              const currentDate = new Date();
+
+              // Reset time to midnight for both dates
+              updatedDate.setHours(0, 0, 0, 0);
+              currentDate.setHours(0, 0, 0, 0);
+
+              // Calculate the difference in days
+              const diffInDays = Math.floor(
+                (currentDate.getTime() - updatedDate.getTime()) / (1000 * 60 * 60 * 24)
+              );
+              return diffInDays;
+            }
 
             // we need to get user profile and image url
 
@@ -183,7 +208,11 @@ export default function CoupleMatchingPage() {
 
                 const profile = await getProfileById(detail.created_by);
                 const files = await listAvenueFiles(detail.created_by);
-                const weddingDate = await getWeddingDate(detail.created_by);
+                const weddingDate = await getUpcomingWeddings(
+                  detail.created_by,
+                  clientWeddingDate
+                );
+                if (!weddingDate) return null;
                 return {
                   files,
                   userName: profile[0].full_name,
@@ -191,10 +220,12 @@ export default function CoupleMatchingPage() {
                   distance: detail.distance,
                   address: detail.address,
                   id: detail.created_by,
+                  updatedAt: getUpdatedDate(weddingDate[0].updated_at)
                 };
               })
             );
-            setNewMatch(userObject);
+            console.log(userObject);
+            setNewMatch(userObject.filter(Boolean));
           } else {
             setNewMatch([]);
           }
@@ -209,10 +240,10 @@ export default function CoupleMatchingPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar/>
+      <Navbar />
 
       <main className="flex-1 py-6 bg-green-50">
-       <div className="container">
+        <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
@@ -256,7 +287,7 @@ export default function CoupleMatchingPage() {
                       <SelectValue placeholder="Distance" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="5">All Distances</SelectItem>
+                      <SelectItem value="6">All Distances</SelectItem>
                       <SelectItem value="5">Within 5 miles</SelectItem>
                       <SelectItem value="10">Within 10 miles</SelectItem>
                     </SelectContent>
@@ -287,8 +318,14 @@ export default function CoupleMatchingPage() {
           </Card>
 
           {/* Match Results */}
-        
-            {Loading ? <div className="w-[70vw] h-[70vh] grid place-items-center "> <div className="loader"></div></div>: <>
+
+          {Loading ? (
+            <div className="w-[70vw] h-[70vh] grid place-items-center ">
+              {" "}
+              <div className="loader"></div>
+            </div>
+          ) : (
+            <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {newMatch.map((match: any) => (
                   <Card
@@ -297,7 +334,7 @@ export default function CoupleMatchingPage() {
                   >
                     <div className="relative aspect-video w-full overflow-hidden">
                       <Image
-                        src={match.files[0] ?? '/placeholder-image.jpg'}
+                        src={match.files[0] ?? "/placeholder-image.jpg"}
                         alt={`${match.userName} wedding`}
                         width={400}
                         height={250}
@@ -305,7 +342,9 @@ export default function CoupleMatchingPage() {
                       />
                       <div className="absolute top-2 right-2">
                         <Badge variant="secondary" className="bg-white/90">
-                          {match?.matchedDaysAgo ?? "2"}d ago
+                          {match?.updatedAt === 0
+                            ? "Today"
+                            : `${match.updatedAt}d ago`}
                         </Badge>
                       </div>
                     </div>
@@ -324,7 +363,9 @@ export default function CoupleMatchingPage() {
                           <div className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
                             <ClientOnlyDate
-                              weddingDate={match.weddingDate.date}
+                              weddingDate={
+                                match?.weddingDate?.date ?? new Date()
+                              }
                             />
                           </div>
                           <div className="flex items-center gap-1">
@@ -399,8 +440,8 @@ export default function CoupleMatchingPage() {
                   </CardContent>
                 </Card>
               )}
-            </>}
-          
+            </>
+          )}
 
           {/* Info Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
