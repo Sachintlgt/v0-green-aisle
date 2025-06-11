@@ -465,7 +465,7 @@ export default function SettingsPage() {
             </TabsContent>
           </Tabs>
 
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <Card className="border-red-200">
               <CardHeader>
                 <CardTitle className="text-red-600">Danger Zone</CardTitle>
@@ -487,7 +487,7 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>

@@ -254,14 +254,14 @@ export default function CoupleMatchingPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
+                {/* <div>
                   <Input
                     // placeholder="Search couples, venues, locations..."
                     placeholder="Search city..."
                     // value={searchTerm}
                     onChange={(e) => debounceSearchTerm(e.target.value)}
                   />
-                </div>
+                </div> */}
                 <div>
                   <Select
                     value={filterDistance}
@@ -277,7 +277,7 @@ export default function CoupleMatchingPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
+                {/* <div>
                   <Select value={filterItems} onValueChange={setFilterItems}>
                     <SelectTrigger>
                       <SelectValue placeholder="Item Type" />
@@ -290,7 +290,7 @@ export default function CoupleMatchingPage() {
                       <SelectItem value="decor">Decor</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-2">
                   <Heart className="h-4 w-4 text-green-600" />
                   <span className="text-sm text-muted-foreground">
