@@ -1,3 +1,5 @@
+import { Database } from "./supabase";
+
 type PriceRange = "low" | "medium" | "high";
 
 export interface AddVenueParams {
@@ -35,3 +37,5 @@ export interface FileObject {
   metadata: Record<string, any>
   buckets: Bucket
 }
+
+export type Wedding = Database['public']['Tables']['weddings']

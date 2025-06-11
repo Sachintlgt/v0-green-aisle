@@ -1,29 +1,53 @@
-"use client"
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Leaf, Calendar, Flower2, Users, Settings, Heart, ChevronRight, MessageCircle, FileText } from "lucide-react"
-import LogoutButton from "@/components/ui/logout-button"
-import { Badge } from "@/components/ui/badge"
-import { useRouter } from "next/navigation"
-import Navbar from "@/components/nav-bar"
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Leaf,
+  Calendar,
+  Flower2,
+  Users,
+  Settings,
+  Heart,
+  ChevronRight,
+  MessageCircle,
+  FileText,
+} from "lucide-react";
+import LogoutButton from "@/components/ui/logout-button";
+import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
+import Navbar from "@/components/nav-bar";
 
 export default function Dashboard() {
   const router = useRouter();
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar/>
+      <Navbar />
 
       <main className="flex-1 py-6 bg-green-50">
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Welcome to Green Aisle</h1>
-              <p className="text-muted-foreground mt-1">Your sustainable wedding planning journey starts here.</p>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Welcome to Green Aisle
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Your sustainable wedding planning journey starts here.
+              </p>
             </div>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() => router.push("/settings")}
+            >
               <Settings className="h-4 w-4" />
               Account Settings
             </Button>
@@ -34,7 +58,8 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Complete Your Wedding Profile</CardTitle>
                 <CardDescription>
-                  Finish setting up your profile to get personalized recommendations and connect with vendors.
+                  Finish setting up your profile to get personalized
+                  recommendations and connect with vendors.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -45,7 +70,9 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h3 className="font-medium">Wedding Details</h3>
-                      <p className="text-xs text-muted-foreground">Set your date and venue</p>
+                      <p className="text-xs text-muted-foreground">
+                        Set your date and venue
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center p-4 bg-green-50 rounded-lg border border-green-100">
@@ -54,7 +81,9 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h3 className="font-medium">Style Preferences</h3>
-                      <p className="text-xs text-muted-foreground">Define your wedding style</p>
+                      <p className="text-xs text-muted-foreground">
+                        Define your wedding style
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center p-4 bg-green-50 rounded-lg border border-green-100">
@@ -63,7 +92,9 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h3 className="font-medium">Guest Information</h3>
-                      <p className="text-xs text-muted-foreground">Add your guest count and details</p>
+                      <p className="text-xs text-muted-foreground">
+                        Add your guest count and details
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -82,7 +113,10 @@ export default function Dashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Explore Tented Venues</CardTitle>
-                    <CardDescription>Discover temporary tented venues with cost-sharing opportunities.</CardDescription>
+                    <CardDescription>
+                      Discover temporary tented venues with cost-sharing
+                      opportunities.
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg mb-4">
@@ -94,7 +128,10 @@ export default function Dashboard() {
                         className="object-cover"
                       />
                     </div>
-                    <Button asChild className="w-full bg-green-600 hover:bg-green-700">
+                    <Button
+                      asChild
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
                       <Link href="/tented-venues">Browse Venues</Link>
                     </Button>
                   </CardContent>
@@ -103,7 +140,9 @@ export default function Dashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Find Vendors</CardTitle>
-                    <CardDescription>Connect with vendors already booked near your venue.</CardDescription>
+                    <CardDescription>
+                      Connect with vendors already booked near your venue.
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg mb-4">
@@ -124,7 +163,9 @@ export default function Dashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Floral Marketplace</CardTitle>
-                    <CardDescription>Browse and reserve reusable floral arrangements.</CardDescription>
+                    <CardDescription>
+                      Browse and reserve reusable floral arrangements.
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg mb-4">
@@ -141,70 +182,85 @@ export default function Dashboard() {
                     </Button>
                   </CardContent>
                 </Card>
-                 <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/match')}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-green-600" />
-                    Couple Matching
-                  </CardTitle>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <CardDescription>
-                  Find couples with similar wedding dates and locations for resource sharing
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">3 new matches</span>
-                  <Badge variant="secondary">Active</Badge>
-                </div>
-              </CardContent>
-            </Card>
+                <Card
+                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => router.push("/match")}
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-green-600" />
+                        Couple Matching
+                      </CardTitle>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <CardDescription>
+                      Find couples with similar wedding dates and locations for
+                      resource sharing
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        3 new matches
+                      </span>
+                      <Badge variant="secondary">Active</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/messages')}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5 text-green-600" />
-                    Messages
-                  </CardTitle>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <CardDescription>
-                  Chat with other couples and vendors about arrangements
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">2 unread messages</span>
-                  <Badge variant="destructive">2</Badge>
-                </div>
-              </CardContent>
-            </Card>
+                <Card
+                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => router.push("/messages")}
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <MessageCircle className="h-5 w-5 text-green-600" />
+                        Messages
+                      </CardTitle>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <CardDescription>
+                      Chat with other couples and vendors about arrangements
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        2 unread messages
+                      </span>
+                      <Badge variant="destructive">2</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/agreements')}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-green-600" />
-                    Agreements
-                  </CardTitle>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <CardDescription>
-                  Manage contracts and agreements with vendors and other couples
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">1 pending signature</span>
-                  <Badge variant="outline">Pending</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-                
+                <Card
+                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => router.push("/agreements")}
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-green-600" />
+                        Agreements
+                      </CardTitle>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <CardDescription>
+                      Manage contracts and agreements with vendors and other
+                      couples
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        1 pending signature
+                      </span>
+                      <Badge variant="outline">Pending</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
             <TabsContent value="timeline" className="mt-4">
@@ -238,5 +294,5 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
-  )
+  );
 }

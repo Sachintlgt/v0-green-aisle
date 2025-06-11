@@ -148,6 +148,7 @@ export default function OnboardingPage() {
     setIsLoading(true);
     setFormError(null);
     setTriggerAuthUseEffect((prev) => !prev);
+    let full_location = location.addressLabel+", "+location.formattedAddress
 
     try {
       await userSignUp({
@@ -156,8 +157,9 @@ export default function OnboardingPage() {
         password,
         userType,
         name,
-        location: location.formattedAddress,
+        location: full_location,
       });
+
       const userId = (await supabase.auth.getUser()).data.user?.id;
 
       let venueObject: AddVenueParams = {
@@ -181,7 +183,7 @@ export default function OnboardingPage() {
           date: date ? date.toISOString() : null,
           guest_count: guestCount ? Number.parseInt(guestCount) : null,
           is_exploring_venues: exploringVenues,
-          general_location: location.formattedAddress || null,
+          general_location: full_location || null,
           status: "planning",
           venue_id: venueData[0].id,
         });

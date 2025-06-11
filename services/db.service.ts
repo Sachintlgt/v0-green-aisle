@@ -1,5 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import { AddVenueParams, SearchVenueByGeoLocationParams } from "@/types/db";
+import {
+  AddVenueParams,
+  SearchVenueByGeoLocationParams,
+  Wedding,
+} from "@/types/db";
 
 export async function addVenue({
   addresslabel = "Avenue street, 2nd cross, NY USA",
@@ -27,24 +31,27 @@ export async function addVenue({
    * state = state is which is optional on the radar
    */
   try {
-    const { data ,  error } = await supabase.from("venues").insert({
-      name: addresslabel,
-      city,
-      zip,
-      country,
-      capacity,
-      price_range,
-      state,
-      is_tented,
-      amenities,
-      description,
-      address: formattedAddress,
-      latitude: lat,
-      longitude: long,
-      created_by,
-    }).select();
+    const { data, error } = await supabase
+      .from("venues")
+      .insert({
+        name: addresslabel,
+        city,
+        zip,
+        country,
+        capacity,
+        price_range,
+        state,
+        is_tented,
+        amenities,
+        description,
+        address: formattedAddress,
+        latitude: lat,
+        longitude: long,
+        created_by,
+      })
+      .select();
     if (error) throw error;
-    console.log(data)
+    console.log(data);
     return data;
   } catch (error) {
     throw error;
@@ -98,7 +105,10 @@ export async function getProfileById(authId: string) {
   }
 }
 
-export async function getUpcomingWeddings(authId: string, weddingsDate: string) {
+export async function getUpcomingWeddings(
+  authId: string,
+  weddingsDate: string
+) {
   try {
     const bufferDays = 3;
 
@@ -115,14 +125,12 @@ export async function getUpcomingWeddings(authId: string, weddingsDate: string) 
         ).toISOString()}`
       );
 
-    if (error) throw error; 
-    return (data.length === 0)? false:  data
+    if (error) throw error;
+    return data.length === 0 ? false : data;
   } catch (error) {
     throw error;
   }
 }
-
-
 
 export async function getWeddingDate(authId: string) {
   try {
@@ -143,29 +151,81 @@ export async function getVenueByCity(city: string) {
       .from("venues")
       .select("latitude, longitude, created_by")
       .ilike("city", `%${city}%`);
-      if(error) throw error;
-      return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function searchNearByWedding(lat: number, long:number, weddingDate: string, max_distance: number = 5){
-  try {
-    console.log({ long, lat, weddingDate, max_distance})
-    const { data, error } = await supabase.rpc('search_weddings_by_location_and_date', {
-      client_lat: lat,
-      client_lon: long,
-      target_date: weddingDate,
-      max_distance_miles: max_distance,
-      buffer_days: 2
-    });
-    console.log({data})
-    if(error) throw error
+    if (error) throw error;
     return data;
   } catch (error) {
     throw error;
   }
 }
 
+export async function searchNearByWedding(
+  lat: number,
+  long: number,
+  weddingDate: string,
+  max_distance: number = 5
+) {
+  try {
+    console.log({ long, lat, weddingDate, max_distance });
+    const { data, error } = await supabase.rpc(
+      "search_weddings_by_location_and_date",
+      {
+        client_lat: lat,
+        client_lon: long,
+        target_date: weddingDate,
+        max_distance_miles: max_distance,
+        buffer_days: 2,
+      }
+    );
+    console.log({ data });
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getWedding(authId: string) {
+  try {
+    const { data, error } = await supabase
+      .from("weddings")
+      .select("*")
+      .eq("couple_id", authId)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error fetching wedding:", error);
+      return;
+    }
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function updateWedding(
+  updates: Wedding["Update"],
+  weddingId: string
+) {
+  try {
+    if (!weddingId) throw new Error("Invalid wedding ID");
+
+    const { data, error } = await supabase
+      .from("weddings")
+      .update(updates)
+      .eq("id", weddingId)
+      .select()
+      .maybeSingle();
+
+    console.log({ updateData: data, error, weddingId });
+
+    if (error) throw error;
+    if (!data) throw new Error("No wedding found to update.");
+
+    return data;
+
+  } catch (error) {
+    console.error("Update failed:", error);
+    throw error;
+  }
+}
 

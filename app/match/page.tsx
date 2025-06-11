@@ -115,24 +115,6 @@ export default function CoupleMatchingPage() {
   const [newMatch, setNewMatch] = useState<any>([]);
   const [Loading, setLoading] = useState(false);
 
-  // const filteredMatches = matches.filter(match => {
-  //   const matchesSearch = match.coupleNames.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //                        match.venue.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //                        match.location.toLowerCase().includes(searchTerm.toLowerCase())
-
-  //   const matchesDistance = filterDistance === "all" ||
-  //                          (filterDistance === "5" && match.distance <= 5) ||
-  //                          (filterDistance === "10" && match.distance <= 10)
-
-  //   const matchesItems = filterItems === "all" ||
-  //                       (filterItems === "florals" && match.items.florals > 0) ||
-  //                       (filterItems === "tents" && match.items.tents > 0) ||
-  //                       (filterItems === "lounge" && match.items.lounge > 0) ||
-  //                       (filterItems === "decor" && match.items.decor > 0)
-
-  //   return matchesSearch && matchesDistance && matchesItems
-  // })
-
   const handleContactCouple = (email: string, coupleNames: string) => {
     window.location.href = `mailto:${email}?subject=Green Aisle - Interest in Wedding Items&body=Hi ${coupleNames},%0D%0A%0D%0AI found your wedding items through Green Aisle and would love to discuss potential sharing opportunities for our upcoming wedding.%0D%0A%0D%0ABest regards`;
   };
@@ -195,7 +177,8 @@ export default function CoupleMatchingPage() {
 
               // Calculate the difference in days
               const diffInDays = Math.floor(
-                (currentDate.getTime() - updatedDate.getTime()) / (1000 * 60 * 60 * 24)
+                (currentDate.getTime() - updatedDate.getTime()) /
+                  (1000 * 60 * 60 * 24)
               );
               return diffInDays;
             }
@@ -220,7 +203,8 @@ export default function CoupleMatchingPage() {
                   distance: detail.distance,
                   address: detail.address,
                   id: detail.created_by,
-                  updatedAt: getUpdatedDate(weddingDate[0].updated_at)
+                  updatedAt: getUpdatedDate(weddingDate[0].updated_at),
+                  description: detail.description,
                 };
               })
             );
@@ -374,6 +358,11 @@ export default function CoupleMatchingPage() {
                               {match?.venue ?? ""} {match.address}
                             </span>
                           </div>
+                          {match?.description && (
+                            <p className="text-muted-foreground text-sm line-clamp-2">
+                              {match.description}
+                            </p>
+                          )}
                         </div>
                       </CardDescription>
                     </CardHeader>
