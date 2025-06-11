@@ -8,6 +8,7 @@ type Address = {
   state?: string;
   stateCode?: string;
   country?: string;
+  postalCode?: string; // ⬅️ Added
   formattedlocation?: string;
   layer?: string;
 };
@@ -18,30 +19,23 @@ type Props = {
 };
 
 function AddressAutoFieldEdit({ location, setLocation }: Props) {
-
-
-  const handleChange = (
-    field: keyof Address,
-    value: string
-  ) => {
+  const handleChange = (field: keyof Address, value: string) => {
     setLocation((prev) => ({
       ...prev,
-        [field]: value,
+      [field]: value,
     }));
   };
 
   return (
     <div className="grid gap-4 mt-4">
-      { (
-        <div>
-          <Label htmlFor="addressLabel">Street / Label</Label>
-          <Input
-            id="addressLabel"
-            value={location?.addressLabel ?? ""}
-            onChange={(e) => handleChange("addressLabel", e.target.value)}
-          />
-        </div>
-      )}
+      <div>
+        <Label htmlFor="addressLabel">Street / Label</Label>
+        <Input
+          id="addressLabel"
+          value={location?.addressLabel ?? ""}
+          onChange={(e) => handleChange("addressLabel", e.target.value)}
+        />
+      </div>
       <div>
         <Label htmlFor="city">City</Label>
         <Input
@@ -56,6 +50,22 @@ function AddressAutoFieldEdit({ location, setLocation }: Props) {
           id="state"
           value={location?.state ?? ""}
           onChange={(e) => handleChange("state", e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="postalCode">PIN Code</Label>
+        <Input
+          id="postalCode"
+          value={location?.postalCode ?? ""}
+          onChange={(e) => handleChange("postalCode", e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="country">Country</Label>
+        <Input
+          id="country"
+          value={location?.country ?? ""}
+          onChange={(e) => handleChange("country", e.target.value)}
         />
       </div>
     </div>
