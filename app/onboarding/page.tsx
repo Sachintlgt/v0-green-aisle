@@ -162,22 +162,23 @@ export default function OnboardingPage() {
 
       const userId = (await supabase.auth.getUser()).data.user?.id;
 
-      let venueObject: AddVenueParams = {
-        formattedAddress: location.formattedAddress,
-        lat: location.latitude,
-        long: location.longitude,
-        country: location.country,
-        state: location.state,
-        city: location.city,
-        addresslabel: location.addressLabel,
-        capacity: +guestCount,
-        is_tented: isTented,
-        created_by: userId as string,
-      };
-      const venueData = await addVenue(venueObject);
-
       // 3. If user is a couple, create a wedding record
       if (userType === "couple") {
+
+        let venueObject: AddVenueParams = {
+          formattedAddress: location.formattedAddress,
+          lat: location.latitude,
+          long: location.longitude,
+          country: location.country,
+          state: location.state,
+          city: location.city,
+          addresslabel: location.addressLabel,
+          capacity: +guestCount,
+          is_tented: isTented,
+          created_by: userId as string,
+        };
+        const venueData = await addVenue(venueObject);
+
         const { error: weddingError } = await supabase.from("weddings").insert({
           couple_id: userId,
           date: date ? date.toISOString() : null,
@@ -202,8 +203,15 @@ export default function OnboardingPage() {
           user_id: userId,
           business_name: businessName,
           business_type: businessType,
-          service_area: serviceArea,
+          service_area: location.addressLabel,
           subscription_tier: "free",
+          address: location.formattedAddress,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          country: location.country,
+          state: location.state,
+          city: location.city,
+          zip: "07086",
         });
 
         if (vendorError) throw vendorError;
@@ -213,7 +221,10 @@ export default function OnboardingPage() {
       }
 
       // Redirect to appropriate page based on user selection
-      if (exploringVenues) {
+      if (userType === "vendor") {
+        // Redirect vendors to Stripe setup
+        router.push("/vendor-stripe-setup");
+      } else if (exploringVenues) {
         router.push("/tented-venues");
       } else {
         router.push("/dashboard");
@@ -600,12 +611,13 @@ export default function OnboardingPage() {
 
                       <div className="grid gap-2">
                         <Label htmlFor="service-area">Service Area</Label>
-                        <Input
+                        {/* <Input
                           id="service-area"
                           placeholder="City, state or region"
                           value={serviceArea}
                           onChange={(e) => setServiceArea(e.target.value)}
-                        />
+                        /> */}
+                        <AutoCompleteLocation setLocation={setLocation} />
                       </div>
                     </>
                   )}

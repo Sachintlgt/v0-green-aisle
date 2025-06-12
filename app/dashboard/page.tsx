@@ -20,19 +20,41 @@ import {
   ChevronRight,
   MessageCircle,
   FileText,
+  Loader2,
 } from "lucide-react";
 import LogoutButton from "@/components/ui/logout-button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/nav-bar";
+import VendorDashboard from "@/components/vendor-dashboard";
+import { useVendorStatus } from "@/hooks/use-vendor-status";
 
 export default function Dashboard() {
   const router = useRouter();
+  const { isVendor, loading } = useVendorStatus();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex-1 py-6 bg-green-50 flex items-center justify-center">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading dashboard...</span>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
 
       <main className="flex-1 py-6 bg-green-50">
+        {isVendor ? (
+          <VendorDashboard />
+        ) : (
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
@@ -292,6 +314,7 @@ export default function Dashboard() {
             </TabsContent>
           </Tabs>
         </div>
+        )}
       </main>
     </div>
   );

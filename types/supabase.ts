@@ -474,6 +474,8 @@ export type Database = {
           rating: number | null
           review_count: number | null
           service_area: string | null
+          stripe_account_id: string | null
+          stripe_onboarding_complete: boolean | null
           subscription_tier: string
           updated_at: string | null
           user_id: string
@@ -490,6 +492,8 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           service_area?: string | null
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
           subscription_tier?: string
           updated_at?: string | null
           user_id: string
@@ -506,6 +510,8 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           service_area?: string | null
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
           subscription_tier?: string
           updated_at?: string | null
           user_id?: string
