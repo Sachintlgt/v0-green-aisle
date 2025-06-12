@@ -33,6 +33,7 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname
   // *********  Add your public route apart from this everthing is consider as protected routes  *********
   const publicRoute = ['/', '/login', '/onboarding', '/reset-password', '/vendor-stripe-setup', '/vendor-stripe-setup/success']
+  const publicRoute = ['/', '/login', '/onboarding', '/reset-password', '/vendor-stripe-setup', '/vendor-stripe-setup/success']
 
   const isAuthRoute = publicRoute.includes(path)
   const isStripeSetupRoute = path.startsWith('/vendor-stripe-setup')
