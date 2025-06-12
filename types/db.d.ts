@@ -39,3 +39,7 @@ export interface FileObject {
 }
 
 export type Wedding = Database['public']['Tables']['weddings']
+
+export type TentedPackage = Database['public']['Tables']['tent_packages']
+
+export type FloralArrangement = Database['public']['Tables']['floral_arrangements'] 

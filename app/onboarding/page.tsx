@@ -37,13 +37,13 @@ import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 import { userSignUp } from "@/services/auth.service";
 import { Checkbox } from "@/components/ui/checkbox";
-import DropZoneCard from "@/components/dropzone-card";
 import AutoCompleteLocation from "@/components/auto-complete-location";
 import { FileWithPath } from "react-dropzone";
 import { uploadAvenueToBucket } from "@/services/bucket.service";
-import { addVenue } from "@/services/db.service";
-import { AddVenueParams } from "@/types/db";
+import { AddTentedPackage, addVenue } from "@/services/db.service";
+import { AddVenueParams, TentedPackage } from "@/types/db";
 import AddressAutoFieldEdit from "@/components/address-field-distribution";
+import TentPackage from "@/components/tent-package";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -71,6 +71,7 @@ export default function OnboardingPage() {
   // Loading and error states
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [tentPackageData, setTentPackageData] = useState<Partial<TentedPackage['Row']>| null>(null)
 
   // Validation states
   const [errors, setErrors] = useState<{
@@ -149,6 +150,10 @@ export default function OnboardingPage() {
     setFormError(null);
     setTriggerAuthUseEffect((prev) => !prev);
     let full_location = location.addressLabel+", "+location.formattedAddress
+    /**
+     * Date needed to add tent package
+     * name,
+     */
 
     try {
       await userSignUp({
@@ -210,6 +215,11 @@ export default function OnboardingPage() {
       }
       if (userId) {
         files.map(async (file) => await uploadAvenueToBucket(file, userId));
+      }
+      if(isTented && tentPackageData){
+        tentPackageData.capacity = +guestCount;
+        tentPackageData.venue_id = venueData[0].id
+        await AddTentedPackage(tentPackageData)
       }
 
       // Redirect to appropriate page based on user selection
@@ -486,6 +496,10 @@ export default function OnboardingPage() {
                               checked={isTented}
                               onCheckedChange={(checked) => {
                                 setIsTented(checked === true);
+                                if(!checked){
+                                  setTentPackageData(null);
+                                  setFiles([])
+                                }
                               }}
                               className="bg-white border border-gray-400"
                             />
@@ -499,7 +513,7 @@ export default function OnboardingPage() {
                           </div>
                           {isTented && (
                             <>
-                              <DropZoneCard setFiles={setFiles} />
+                              <TentPackage setFiles={setFiles} setTentPackageData={setTentPackageData} tentedPackage={tentPackageData} />
                             </>
                           )}
                         </>

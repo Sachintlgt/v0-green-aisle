@@ -69,3 +69,23 @@ export async function generateFileUrl(data:FileObject[], key: string) {
     throw error
   }
 }
+
+export async function uploadClientList(file: File, productId: string) {
+  try {
+    let ext = file.name.split(".").pop()?.toLowerCase();
+    let key = `list/${productId}/${self.crypto.randomUUID()}.${ext}`;
+
+    const { data, error } = await supabase.storage
+      .from(BucketName)
+      .upload(key, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

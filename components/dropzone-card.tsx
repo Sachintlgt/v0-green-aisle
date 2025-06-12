@@ -4,9 +4,10 @@ import { Input } from "./ui/input";
 import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
 
 const DropZoneCard = ({
-  setFiles,
+  setFiles, onEdit
 }: {
   setFiles: Dispatch<SetStateAction<FileWithPath[]>>;
+  onEdit?: boolean
 }) => {
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     setFiles(acceptedFiles);
@@ -25,10 +26,10 @@ const DropZoneCard = ({
     <div className="my-4 space-y-2">
       <Label htmlFor="media" className="text-sm font-medium text-gray-700">
         Please add a picture or video as proof of tent
-        <span className="block text-xs text-gray-500 mt-1">
+       {!onEdit && ( <span className="block text-xs text-gray-500 mt-1">
           {" "}
           This is Optional, you can add it later.
-        </span>
+        </span>)}
         <span className="block text-xs text-gray-500 mt-1">
           ( Note: your venue will be listed as tented once you share the
           picture.)
