@@ -75,7 +75,7 @@ export default function AddListingPage() {
       await Promise.all(
         files.map((file) => uploadClientList(file, data.id))
       );
-  
+      return router.replace('/floral-marketplace')
       console.log("Submit Listing:", listingData);
     } catch (error) {
       console.error("Submission error:", error);
@@ -191,9 +191,9 @@ export default function AddListingPage() {
                     <SelectValue placeholder="Select owner type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Florist">Florist</SelectItem>
-                    <SelectItem value="Couple">Couple</SelectItem>
-                    <SelectItem value="Shared">Shared</SelectItem>
+                    <SelectItem value="florist">Florist</SelectItem>
+                    <SelectItem value="couple">Couple</SelectItem>
+                    <SelectItem value="shared">Shared</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
