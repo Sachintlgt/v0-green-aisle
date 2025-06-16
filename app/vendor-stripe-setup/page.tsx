@@ -92,42 +92,35 @@ export default function VendorStripeSetupPage() {
     }
   };
 
-  const createStripeAccount = async () => {
-    try {
-      setIsCreatingAccount(true);
-      setError(null);
+const createStripeAccount = async () => {
+  try {
+    setIsCreatingAccount(true);
+    setError(null);
 
-      if (!user) {
-        setError('User not authenticated');
-        return;
-      }
+    const response = await fetch('/api/stripe/create-account', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ stripeId: 1 }),
+    });
 
-      // Call API to create real Stripe account
-      const response = await fetch('/api/stripe/create-account', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('response', response)
+    console.log('response', response)
+    const data = await response.json(); // only once
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create Stripe account');
-      }
-
-      const data = await response.json();
-      console.log('Stripe account created:', data);
-
-      // Refresh account status
-      await checkAccountStatus();
-    } catch (err) {
-      console.error('Error creating Stripe account:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred while creating account');
-    } finally {
-      setIsCreatingAccount(false);
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to create Stripe account');
     }
-  };
+
+    console.log('Stripe account created:', data);
+    await checkAccountStatus();
+  } catch (err) {
+    console.error('Error creating Stripe account:', err);
+    setError(err instanceof Error ? err.message : 'An error occurred');
+  } finally {
+    setIsCreatingAccount(false);
+  }
+};
 
   const createAccountLink = async () => {
     if (!accountStatus?.accountId) return;

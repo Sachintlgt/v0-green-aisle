@@ -37,6 +37,13 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = publicRoute.includes(path)
   const isStripeSetupRoute = path.startsWith('/vendor-stripe-setup')
 
+  const isApiRoute = path.startsWith('/api');
+
+  if (isApiRoute) {
+    // Allow all API routes without redirect
+    return NextResponse.next({ request });
+  }
+
   if (!user && !isAuthRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
@@ -44,6 +51,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // once logged user can't access the public routes (except Stripe setup routes)
+  // if (user && isAuthRoute && !isStripeSetupRoute) {
   if (user && isAuthRoute && !isStripeSetupRoute) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
