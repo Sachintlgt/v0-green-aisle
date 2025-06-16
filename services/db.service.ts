@@ -1,7 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import {
   AddVenueParams,
+  FloralArrangement,
   SearchVenueByGeoLocationParams,
+  TentedPackage,
   Wedding,
 } from "@/types/db";
 
@@ -228,4 +230,26 @@ export async function updateWedding(
     throw error;
   }
 }
+
+export async function AddTentedPackage(value: Partial<TentedPackage['Insert']>){
+  try {
+    const { data, error } = await supabase.from('tent_packages').insert(value).select().single();
+    if(error) throw error;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function AddListingINMarketPlace(value: FloralArrangement['Insert'] ): Promise<FloralArrangement['Row']>{
+  try {
+    const { data, error} = await supabase.from('floral_arrangements').insert(value).select().single();
+    if(error) throw error;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 

@@ -4,8 +4,10 @@ import "radar-sdk-js/dist/radar.css";
 import AutocompleteUI from "radar-sdk-js/dist/ui/autocomplete";
 const AutoCompleteLocation = ({
   setLocation,
+  customPlaceholder
 }: {
   setLocation: Dispatch<SetStateAction<any>>;
+  customPlaceholder?: string;
 }) => {
   const autocompleteRef = useRef<any>(null);
 
@@ -20,7 +22,7 @@ const AutoCompleteLocation = ({
         onSelection: (address) => {
           setLocation(address);
         },
-        placeholder: "Venue address ...",
+        placeholder: customPlaceholder ?? "Venue address ...",
         
       });
     }

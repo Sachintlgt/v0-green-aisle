@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Leaf, Search, Filter } from "lucide-react"
+import { Leaf, Search, Filter, Plus } from "lucide-react"
 import { FloralCard } from "@/components/floral-card"
 import LogoutButton from "@/components/ui/logout-button"
 import Navbar from "@/components/nav-bar"
@@ -12,10 +12,11 @@ import Navbar from "@/components/nav-bar"
 export default function FloralMarketplace() {
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar/>
+      <Navbar />
 
       <main className="flex-1 py-6 bg-green-50">
         <div className="container">
+          {/* Header: Title + Search + Add */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Floral Marketplace</h1>
@@ -23,28 +24,43 @@ export default function FloralMarketplace() {
                 Browse and reserve floral arrangements for reuse at your wedding.
               </p>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search Bar */}
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search arrangements..."
-                  className="w-full md:w-[200px] lg:w-[300px] pl-8"
+                  className="w-[180px] md:w-[200px] lg:w-[250px] pl-8"
                 />
               </div>
+
+              {/* Filter Button */}
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
                 <span className="sr-only">Filter</span>
               </Button>
+
+              {/* Add Listing Button */}
+              <Link href="/add-listing">
+                <Button className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white">
+                  <Plus className="w-4 h-4" />
+                  Add Listing
+                </Button>
+              </Link>
             </div>
           </div>
 
+          {/* Tabs */}
           <Tabs defaultValue="available" className="mb-6">
             <TabsList>
               <TabsTrigger value="available">Available Now</TabsTrigger>
               <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
               <TabsTrigger value="all">All Arrangements</TabsTrigger>
             </TabsList>
+
+            {/* Available Now */}
             <TabsContent value="available" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <FloralCard
@@ -120,17 +136,19 @@ export default function FloralMarketplace() {
                 />
               </div>
             </TabsContent>
+
+            {/* Upcoming */}
             <TabsContent value="upcoming" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Upcoming floral arrangements would go here */}
                 <Card className="flex items-center justify-center h-64 border-dashed">
                   <p className="text-muted-foreground">More arrangements coming soon</p>
                 </Card>
               </div>
             </TabsContent>
+
+            {/* All */}
             <TabsContent value="all" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* All floral arrangements would go here */}
                 <Card className="flex items-center justify-center h-64 border-dashed">
                   <p className="text-muted-foreground">View all arrangements</p>
                 </Card>
