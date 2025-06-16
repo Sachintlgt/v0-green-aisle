@@ -222,8 +222,8 @@ export default function OnboardingPage() {
 
       // Redirect to appropriate page based on user selection
       if (userType === "vendor") {
-        // Redirect vendors to Stripe setup
-        router.push("/vendor-stripe-setup");
+        // Redirect vendors to subscription plans first
+        router.push("/subscription-plans");
       } else if (exploringVenues) {
         router.push("/tented-venues");
       } else {

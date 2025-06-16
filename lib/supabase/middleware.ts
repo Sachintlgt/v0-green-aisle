@@ -32,10 +32,11 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname
   // *********  Add your public route apart from this everthing is consider as protected routes  *********
-  const publicRoute = ['/', '/login', '/onboarding', '/reset-password', '/vendor-stripe-setup', '/vendor-stripe-setup/success']
+  const publicRoute = ['/', '/login', '/onboarding', '/reset-password', '/subscription-plans', '/subscription-success', '/vendor-stripe-setup', '/vendor-stripe-setup/success']
 
   const isAuthRoute = publicRoute.includes(path)
   const isStripeSetupRoute = path.startsWith('/vendor-stripe-setup')
+  const isSubscriptionRoute = path.startsWith('/subscription-')
 
   const isApiRoute = path.startsWith('/api');
 
@@ -50,14 +51,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // once logged user can't access the public routes (except Stripe setup routes)
-  // if (user && isAuthRoute && !isStripeSetupRoute) {
-  if (user && isAuthRoute && !isStripeSetupRoute) {
+  // once logged user can't access the public routes (except Stripe setup and subscription routes)
+  if (user && isAuthRoute && !isStripeSetupRoute && !isSubscriptionRoute) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // Check if vendor needs to complete Stripe setup
-  if (user && !isStripeSetupRoute && path !== '/api/stripe/account-status') {
+  // Check if vendor needs to complete subscription or Stripe setup
+  if (user && !isSubscriptionRoute && !isStripeSetupRoute && !path.startsWith('/api/')) {
     try {
       // Get user profile to check if they're a vendor
       const { data: profile } = await supabase
@@ -67,21 +67,28 @@ export async function updateSession(request: NextRequest) {
         .single()
 
       if (profile?.user_type === 'vendor') {
-        // Check vendor's Stripe status
+        // Check vendor's subscription and Stripe status
         const { data: vendor } = await supabase
           .from('vendors')
-          .select('stripe_onboarding_complete')
+          .select('subscription_status, stripe_onboarding_complete')
           .eq('user_id', user.id)
           .single()
 
-        // If vendor exists but hasn't completed Stripe setup, redirect to setup
-        if (vendor && !vendor.stripe_onboarding_complete) {
-          return NextResponse.redirect(new URL('/vendor-stripe-setup', request.url))
+        if (vendor) {
+          // If vendor hasn't selected a subscription plan, redirect to subscription plans
+          if (!vendor.subscription_status || vendor.subscription_status === 'inactive') {
+            return NextResponse.redirect(new URL('/subscription-plans', request.url))
+          }
+
+          // If vendor has subscription but hasn't completed Stripe setup, redirect to Stripe setup
+          // if (vendor.subscription_status === 'active' && !vendor.stripe_onboarding_complete) {
+          //   return NextResponse.redirect(new URL('/vendor-stripe-setup', request.url))
+          // }
         }
       }
     } catch (error) {
       // If there's an error checking vendor status, continue normally
-      console.error('Error checking vendor Stripe status:', error)
+      console.error('Error checking vendor status:', error)
     }
   }
 
