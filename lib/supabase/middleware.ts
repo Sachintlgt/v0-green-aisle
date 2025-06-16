@@ -111,9 +111,9 @@ export async function updateSession(request: NextRequest) {
           .single()
 
         // If vendor exists but hasn't completed Stripe setup, redirect to setup
-        if (vendor && !vendor.stripe_onboarding_complete) {
-          return NextResponse.redirect(new URL('/vendor-stripe-setup', request.url))
-        }
+        // if (vendor && !vendor.stripe_onboarding_complete) {
+        //   return NextResponse.redirect(new URL('/vendor-stripe-setup', request.url))
+        // }
       }
     } catch (error) {
       // If there's an error checking vendor status, continue normally
