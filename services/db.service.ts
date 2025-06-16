@@ -233,7 +233,7 @@ export async function updateWedding(
 
 export async function AddTentedPackage(value: Partial<TentedPackage['Insert']>){
   try {
-    const { data, error } = await supabase.from('tent_packages').insert(value).single();
+    const { data, error } = await supabase.from('tent_packages').insert(value).select().single();
     if(error) throw error;
     return data;
   } catch (error) {
@@ -243,7 +243,7 @@ export async function AddTentedPackage(value: Partial<TentedPackage['Insert']>){
 
 export async function AddListingINMarketPlace(value: FloralArrangement['Insert'] ): Promise<FloralArrangement['Row']>{
   try {
-    const { data, error} = await supabase.from('floral_arrangements').insert(value).single();
+    const { data, error} = await supabase.from('floral_arrangements').insert(value).select().single();
     if(error) throw error;
     return data;
   } catch (error) {
