@@ -52,7 +52,8 @@ export default function FloralMarketplace() {
                 Floral Marketplace
               </h1>
               <p className="text-muted-foreground mt-1">
-                Browse and reserve floral arrangements for reuse at your wedding.
+                Browse and reserve floral arrangements for reuse at your
+                wedding.
               </p>
             </div>
 
