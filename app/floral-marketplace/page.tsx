@@ -29,7 +29,6 @@ export default function FloralMarketplace() {
         try {
           setLoading(true);
           const products = await GetProducts(user.id);
-          console.log(products);           // moved out of JSX
           setData(products);
         } catch (error: any) {
           alert(error.message ?? "Something went wrong while fetching products");
