@@ -1,11 +1,13 @@
 import { supabase } from "@/lib/supabase";
 import {
   AddVenueParams,
-  FloralArrangement,
+  Products,
+  ProductsDetails,
   SearchVenueByGeoLocationParams,
   TentedPackage,
   Wedding,
 } from "@/types/db";
+import { listFiles } from "./bucket.service";
 
 export async function addVenue({
   addresslabel = "Avenue street, 2nd cross, NY USA",
@@ -53,7 +55,6 @@ export async function addVenue({
       })
       .select();
     if (error) throw error;
-    console.log(data);
     return data;
   } catch (error) {
     throw error;
@@ -224,32 +225,64 @@ export async function updateWedding(
     if (!data) throw new Error("No wedding found to update.");
 
     return data;
-
   } catch (error) {
     console.error("Update failed:", error);
     throw error;
   }
 }
 
-export async function AddTentedPackage(value: Partial<TentedPackage['Insert']>){
+export async function AddTentedPackage(
+  value: Partial<TentedPackage["Insert"]>
+) {
   try {
-    const { data, error } = await supabase.from('tent_packages').insert(value).select().single();
-    if(error) throw error;
+    const { data, error } = await supabase
+      .from("tent_packages")
+      .insert(value)
+      .select()
+      .single();
+    if (error) throw error;
     return data;
   } catch (error) {
     throw error;
   }
 }
 
-export async function AddListingINMarketPlace(value: FloralArrangement['Insert'] ): Promise<FloralArrangement['Row']>{
+export async function AddListingINMarketPlace(
+  value: Products["Insert"]
+): Promise<Products["Row"]> {
   try {
-    const { data, error} = await supabase.from('floral_arrangements').insert(value).select().single();
-    if(error) throw error;
+    const { data, error } = await supabase
+      .from("products")
+      .insert(value)
+      .select()
+      .single();
+    if (error) throw error;
     return data;
   } catch (error) {
     throw error;
   }
 }
 
+export async function GetProducts(userId: string): Promise<ProductsDetails[]> {
+  try {
+    const { data, error } = await supabase.from("products").select().neq("owner_id", userId);
 
+    if (error) throw error;
+    if (!data) return [];
 
+    const productDetails = await Promise.all(
+      data.map(async (val: Products["Row"]) => {
+        let images =
+          (await listFiles(val.id, "list"))?.filter(
+            (img): img is string => img !== null
+          ) ?? [];
+        return { ...val, images };
+      })
+    );
+
+    return productDetails;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+}

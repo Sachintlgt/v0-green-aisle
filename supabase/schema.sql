@@ -199,6 +199,24 @@ CREATE TABLE public.notifications (
     related_id UUID
 );
 
+----- Create Table product
+CREATE TABLE public.products (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    title TEXT NOT NULL,
+    description TEXT,
+    price NUMERIC NOT NULL,
+    owner_type TEXT NOT NULL CHECK (owner_type IN ('vendor', 'couple')),
+    owner_id UUID REFERENCES auth.users(id) NOT NULL,
+    location TEXT NOT NULL,
+    date_available TIMESTAMP WITH TIME ZONE NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('available', 'pending', 'sold')) DEFAULT 'available',
+    tags TEXT[],
+    type TEXT
+);
+
+
 -- Create nearby_venues function
 CREATE OR REPLACE FUNCTION nearby_venues(lat NUMERIC, lng NUMERIC, radius_miles NUMERIC)
 RETURNS TABLE (

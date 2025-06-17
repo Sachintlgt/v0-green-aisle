@@ -43,7 +43,7 @@ import {
   searchNearByWedding,
   searchVenueByGeoLocation,
 } from "@/services/db.service";
-import { listAvenueFiles } from "@/services/bucket.service";
+import { listFiles } from "@/services/bucket.service";
 import debounce from "lodash.debounce";
 import LogoutButton from "@/components/ui/logout-button";
 import Navbar from "@/components/nav-bar";
@@ -190,7 +190,7 @@ export default function CoupleMatchingPage() {
                 /** We need to get user profile details & fetch his image & thier wedding date */
 
                 const profile = await getProfileById(detail.created_by);
-                const files = await listAvenueFiles(detail.created_by);
+                const files = await listFiles(detail.created_by, 'avenue');
                 const weddingDate = await getUpcomingWeddings(
                   detail.created_by,
                   clientWeddingDate

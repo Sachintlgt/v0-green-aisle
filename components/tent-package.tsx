@@ -101,9 +101,9 @@ function TentPackage({
             ))}
           </SelectContent>
         </Select>
-        {formErrors.name && (
+        {/* {formErrors.name && (
           <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
-        )}
+        )} */}
       </section>
 
       {/* Price */}
@@ -118,9 +118,9 @@ function TentPackage({
             handleChange("price", Number(e.target.value) || 0)
           }
         />
-        {formErrors.price && (
+        {/* {formErrors.price && (
           <p className="text-red-500 text-sm mt-1">{formErrors.price}</p>
-        )}
+        )} */}
       </section>
 
       {/* Size (in yards) */}
@@ -133,9 +133,9 @@ function TentPackage({
           value={tentedPackage?.size ?? ""}
           onChange={(e) => handleChange("size", e.target.value)}
         />
-        {formErrors.size && (
+        {/* {formErrors.size && (
           <p className="text-red-500 text-sm mt-1">{formErrors.size}</p>
-        )}
+        )} */}
       </section>
 
       {/* Features */}
@@ -146,9 +146,9 @@ function TentPackage({
           placeholder="Type a feature and press Enter..."
           label="Add features *"
         />
-        {formErrors.features && (
+        {/* {formErrors.features && (
           <p className="text-red-500 text-sm mt-1">{formErrors.features}</p>
-        )}
+        )} */}
       </section>
 
       {/* File Upload */}

@@ -1,39 +1,63 @@
-import Image from "next/image"
-import Link from "next/link"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { MapPin, Calendar, DollarSign, Info } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+"use client"
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { MapPin, Calendar, DollarSign, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
 
 interface FloralCardProps {
-  id: string
-  title: string
-  description: string
-  image: string
-  price: number
-  location: string
-  date: string
-  owner: "Florist" | "Couple" | "Shared"
-  tags: string[]
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  price: number;
+  location: string;
+  date: string;
+  owner: "Vendor" | "Couple";
+  tags: string[];
 }
 
-export function FloralCard({ id, title, description, image, price, location, date, owner, tags }: FloralCardProps) {
+export function FloralCard({
+  id,
+  title,
+  description,
+  image,
+  price,
+  location,
+  date,
+  owner,
+  tags,
+}: FloralCardProps) {
   // Determine badge color based on owner type
   const getBadgeColor = (owner: string) => {
     switch (owner) {
-      case "Florist":
-        return "bg-blue-100 text-blue-800 hover:bg-blue-100"
+      case "Vendor":
+        return "bg-blue-100 text-blue-800 hover:bg-blue-100";
       case "Couple":
-        return "bg-purple-100 text-purple-800 hover:bg-purple-100"
-      case "Shared":
-        return "bg-amber-100 text-amber-800 hover:bg-amber-100"
+        return "bg-purple-100 text-purple-800 hover:bg-purple-100";
       default:
-        return ""
+        return "";
     }
-  }
+  };
+  let disabled = true;
+  const router = useRouter();
 
-  const ownerBadgeClass = getBadgeColor(owner)
+  const ownerBadgeClass = getBadgeColor(owner);
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
@@ -42,6 +66,7 @@ export function FloralCard({ id, title, description, image, price, location, dat
           src={image || "/placeholder.svg"}
           alt={title}
           fill
+          priority
           className="object-cover transition-transform hover:scale-105"
         />
         <div className="absolute top-2 right-2">
@@ -54,9 +79,10 @@ export function FloralCard({ id, title, description, image, price, location, dat
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-xs">
-                    {owner === "Florist" && "Owned by the florist, available for rental"}
-                    {owner === "Couple" && "Owned by another couple, available for purchase"}
-                    {owner === "Shared" && "Shared ownership between multiple parties"}
+                    {owner === "Vendor" &&
+                      "Owned by the Vendor, available for rental"}
+                    {owner === "Couple" &&
+                      "Owned by another couple, available for purchase"}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -66,7 +92,9 @@ export function FloralCard({ id, title, description, image, price, location, dat
       </div>
       <CardHeader className="p-4">
         <CardTitle className="text-lg">{title}</CardTitle>
-        <CardDescription className="line-clamp-2">{description}</CardDescription>
+        <CardDescription className="line-clamp-2">
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-2">
         <div className="flex items-center text-sm text-muted-foreground">
@@ -89,10 +117,18 @@ export function FloralCard({ id, title, description, image, price, location, dat
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button asChild className="w-full bg-green-600 hover:bg-green-700">
-          <Link href={`/floral-marketplace/${id}`}>View Details</Link>
+        <Button
+          disabled={true}
+          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-500 disabled:cursor-not-allowed"
+          onClick={() => {
+            if (!disabled) {
+              router.push(`/floral-marketplace/${id}`);
+            }
+          }}
+        >
+          View Details
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
