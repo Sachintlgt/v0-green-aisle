@@ -30,7 +30,7 @@ import DropZoneCard from "@/components/dropzone-card";
 import AddressAutoFieldEdit from "@/components/address-field-distribution";
 import AutoCompleteLocation from "@/components/auto-complete-location";
 import { useAuth } from "@/contexts/auth-context";
-import { FloralArrangement } from "@/types/db";
+import { FloralArrangement, Products } from "@/types/db";
 import { AddListingINMarketPlace } from "@/services/db.service";
 import { uploadClientList } from "@/services/bucket.service";
 
@@ -39,8 +39,9 @@ export default function AddListingPage() {
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
-    title: "",
-    customTitle: "",
+    type: "",          // category: floral/decor/tent/other
+    customType: "",    // free‑text when type === "other"
+    title: "",         // listing headline
     description: "",
     price: "",
     date: undefined as Date | undefined,
@@ -57,39 +58,43 @@ export default function AddListingPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-  
-    const listingData: FloralArrangement["Insert"] = {
-      title: formData.title === "other" ? formData.customTitle : formData.title,
+
+    const listingData: Products["Insert"] = {
+      type:
+        formData.type === "other" ? formData.customType : formData.type,
+      title: formData.title,
       description: formData.description,
       price: parseFloat(formData.price),
-      date_available: formData.date?.toISOString() || new Date().toISOString(),
-      location: location.addressLabel + ", " + location.formattedAddress,
+      date_available:
+        formData.date?.toISOString() || new Date().toISOString(),
+      location:
+        location?.formattedAddress
+          ?`${location.formattedAddress}`
+          : "",
       owner_type: formData.owner,
       owner_id: user?.id || "",
       tags: formData.features,
     };
-  
+
     try {
       const data = await AddListingINMarketPlace(listingData);
-  
-      await Promise.all(
-        files.map((file) => uploadClientList(file, data.id))
-      );
-      return router.replace('/floral-marketplace')
-      console.log("Submit Listing:", listingData);
+
+      await Promise.all(files.map((file) => uploadClientList(file, data.id)));
+
+      router.replace("/floral-marketplace");
     } catch (error) {
       console.error("Submission error:", error);
     }
   }
-  
-
 
   return (
     <div className="flex min-h-screen flex-col bg-green-50">
       <Navbar />
+
       <main className="flex-1 py-8">
         <div className="container max-w-3xl px-4">
           <Card className="p-6 shadow-md space-y-6 bg-white">
+            {/* Header */}
             <div>
               <h2 className="text-2xl font-semibold flex items-center gap-2">
                 <PlusCircle className="w-5 h-5 text-green-600" />
@@ -100,10 +105,17 @@ export default function AddListingPage() {
               </p>
             </div>
 
+            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* TYPE (category) */}
               <div className="space-y-1.5">
-                <Label htmlFor="title">Title</Label>
-                <Select value={formData.title} onValueChange={(val) => handleChange("title", val)}>
+                <Label htmlFor="type">
+                  Type <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(val) => handleChange("type", val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
@@ -116,30 +128,54 @@ export default function AddListingPage() {
                 </Select>
               </div>
 
-              {formData.title === "other" && (
+              {/* custom type when “Other” */}
+              {formData.type === "other" && (
                 <div className="space-y-1.5">
-                  <Label htmlFor="customTitle">Custom Title</Label>
+                  <Label htmlFor="customType">
+                    Custom Type <span className="text-red-500">*</span>
+                  </Label>
                   <Input
-                    id="customTitle"
-                    placeholder="Enter custom listing title"
-                    value={formData.customTitle}
-                    onChange={(e) => handleChange("customTitle", e.target.value)}
+                    id="customType"
+                    placeholder="Enter custom type"
+                    value={formData.customType}
+                    onChange={(e) =>
+                      handleChange("customType", e.target.value)
+                    }
                   />
                 </div>
               )}
 
+              {/* LISTING TITLE */}
+              <div className="space-y-1.5">
+                <Label htmlFor="title">
+                  Listing Title <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., 50 ivory peonies"
+                  value={formData.title}
+                  onChange={(e) => handleChange("title", e.target.value)}
+                />
+              </div>
+
+              {/* DESCRIPTION (optional) */}
               <div className="space-y-1.5">
                 <Label htmlFor="description">Description</Label>
                 <Input
                   id="description"
                   placeholder="Describe your item"
                   value={formData.description}
-                  onChange={(e) => handleChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("description", e.target.value)
+                  }
                 />
               </div>
 
+              {/* PRICE */}
               <div className="space-y-1.5">
-                <Label htmlFor="price">Price ($)</Label>
+                <Label htmlFor="price">
+                  Price ($) <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="price"
                   type="number"
@@ -149,17 +185,30 @@ export default function AddListingPage() {
                 />
               </div>
 
+              {/* LOCATION (autocomplete) */}
               <div className="space-y-1.5">
-                <AutoCompleteLocation setLocation={setLocation} customPlaceholder="Enter venue location" />
+                <Label htmlFor="location">
+                  Location <span className="text-red-500">*</span>
+                </Label>
+                <AutoCompleteLocation
+                  setLocation={setLocation}
+                  customPlaceholder="Enter venue location"
+                />
                 {location && (
                   <div className="grid gap-2">
-                    <AddressAutoFieldEdit location={location} setLocation={setLocation} />
+                    <AddressAutoFieldEdit
+                      location={location}
+                      setLocation={setLocation}
+                    />
                   </div>
                 )}
               </div>
 
+              {/* DATE AVAILABLE */}
               <div className="space-y-1.5">
-                <Label>Date</Label>
+                <Label>
+                  Date <span className="text-red-500">*</span>
+                </Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -170,7 +219,11 @@ export default function AddListingPage() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.date ? format(formData.date, "PPP") : <span>Pick a date</span>}
+                      {formData.date ? (
+                        format(formData.date, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -184,33 +237,45 @@ export default function AddListingPage() {
                 </Popover>
               </div>
 
+              {/* OWNER TYPE */}
               <div className="space-y-1.5">
-                <Label htmlFor="owner">Owner</Label>
-                <Select value={formData.owner} onValueChange={(val) => handleChange("owner", val)}>
+                <Label htmlFor="owner">
+                  Owner <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.owner}
+                  onValueChange={(val) => handleChange("owner", val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select owner type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="florist">Florist</SelectItem>
+                    <SelectItem value="vendor">Vendor</SelectItem>
                     <SelectItem value="couple">Couple</SelectItem>
-                    <SelectItem value="shared">Shared</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* FILE UPLOAD (optional) */}
               <section>
                 <DropZoneCard setFiles={setFiles} onEdit />
               </section>
 
+              {/* TAGS / FEATURES (optional) */}
               <section>
                 <FreeInputMultiSelect
                   selected={formData.features}
                   onChange={(val) => handleChange("features", val)}
                   placeholder="Type a feature and press Enter..."
-                  label="Add features *"
+                  label={
+                    <>
+                      Add features <span className="text-red-500">*</span>
+                    </>
+                  }
                 />
               </section>
 
+              {/* SUBMIT */}
               <Button
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700 text-white"

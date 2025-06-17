@@ -23,9 +23,9 @@ export async function uploadAvenueToBucket(file: File, userId: string) {
   }
 }
 
-export async function listAvenueFiles(authId: string) {
+export async function listFiles(id: string, directory: "avenue"| "list") {
   try {
-    const key = `avenue/${authId}/`;
+    const key = `${directory}/${id}/`;
 
 
     const { data, error } = await supabase.storage

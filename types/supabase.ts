@@ -193,6 +193,54 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          created_at: string | null
+          date_available: string
+          description: string | null
+          id: string
+          location: string
+          owner_id: string
+          owner_type: string
+          price: number
+          status: string
+          tags: string[] | null
+          title: string
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_available: string
+          description?: string | null
+          id?: string
+          location: string
+          owner_id: string
+          owner_type: string
+          price: number
+          status?: string
+          tags?: string[] | null
+          title: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_available?: string
+          description?: string | null
+          id?: string
+          location?: string
+          owner_id?: string
+          owner_type?: string
+          price?: number
+          status?: string
+          tags?: string[] | null
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -464,19 +512,26 @@ export type Database = {
       }
       vendors: {
         Row: {
+          address: string | null
           business_name: string
           business_type: string
+          city: string | null
+          country: string | null
           created_at: string | null
           description: string | null
           email: string | null
           id: string
+          latitude: number | null
+          longitude: number | null
           phone: string | null
+          plan_type: number | null
           rating: number | null
           review_count: number | null
           service_area: string | null
+          state: string | null
           stripe_account_id: string | null
-          stripe_onboarding_complete: boolean | null
           stripe_customer_id: string | null
+          stripe_onboarding_complete: boolean | null
           stripe_subscription_id: string | null
           subscription_plan_id: string | null
           subscription_status: string | null
@@ -484,21 +539,29 @@ export type Database = {
           updated_at: string | null
           user_id: string
           website: string | null
+          zip: string | null
         }
         Insert: {
+          address?: string | null
           business_name: string
           business_type: string
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
           email?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
+          plan_type?: number | null
           rating?: number | null
           review_count?: number | null
           service_area?: string | null
+          state?: string | null
           stripe_account_id?: string | null
-          stripe_onboarding_complete?: boolean | null
           stripe_customer_id?: string | null
+          stripe_onboarding_complete?: boolean | null
           stripe_subscription_id?: string | null
           subscription_plan_id?: string | null
           subscription_status?: string | null
@@ -506,21 +569,29 @@ export type Database = {
           updated_at?: string | null
           user_id: string
           website?: string | null
+          zip?: string | null
         }
         Update: {
+          address?: string | null
           business_name?: string
           business_type?: string
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
           email?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
+          plan_type?: number | null
           rating?: number | null
           review_count?: number | null
           service_area?: string | null
+          state?: string | null
           stripe_account_id?: string | null
-          stripe_onboarding_complete?: boolean | null
           stripe_customer_id?: string | null
+          stripe_onboarding_complete?: boolean | null
           stripe_subscription_id?: string | null
           subscription_plan_id?: string | null
           subscription_status?: string | null
@@ -528,6 +599,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           website?: string | null
+          zip?: string | null
         }
         Relationships: []
       }

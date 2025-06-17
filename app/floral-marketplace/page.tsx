@@ -1,15 +1,35 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Leaf, Search, Filter, Plus } from "lucide-react"
-import { FloralCard } from "@/components/floral-card"
-import LogoutButton from "@/components/ui/logout-button"
-import Navbar from "@/components/nav-bar"
+"use client";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {  Search, Filter, Plus } from "lucide-react";
+import { FloralCard } from "@/components/floral-card";
+import Navbar from "@/components/nav-bar";
+import { ProductsDetails } from "@/types/db";
+import { useEffect, useState } from "react";
+import { GetProducts } from "@/services/db.service";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function FloralMarketplace() {
+  const [data, setdata] = useState<ProductsDetails[]>([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      (async () => {
+        try {
+          const data = await GetProducts(user.id);
+          console.log(data);
+          setdata(data);
+        } catch (error: any) {
+          alert(error.message ?? "Something wrong with getting products");
+        }
+      })();
+    }
+  }, [user]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -19,9 +39,12 @@ export default function FloralMarketplace() {
           {/* Header: Title + Search + Add */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Floral Marketplace</h1>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Floral Marketplace
+              </h1>
               <p className="text-muted-foreground mt-1">
-                Browse and reserve floral arrangements for reuse at your wedding.
+                Browse and reserve floral arrangements for reuse at your
+                wedding.
               </p>
             </div>
 
@@ -63,6 +86,23 @@ export default function FloralMarketplace() {
             {/* Available Now */}
             <TabsContent value="available" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data.map((val: ProductsDetails) => (
+                  <FloralCard
+                    key={val.id}
+                    id={val.id}
+                    title={val.title}
+                    description={val.description ?? ""}
+                    image={
+                      val.images[0] ?? "/placeholder.svg?height=400&width=600"
+                    }
+                    price={+val.price.toFixed(2)}
+                    location={val.location}
+                    date="June 15, 2025"
+                    owner={val.owner_type === "couple" ? "Couple" : "Vendor"}
+                    tags={val?.tags ?? []}
+                  />
+                ))}
+
                 <FloralCard
                   id="floral-1"
                   title="Elegant Rose Centerpieces"
@@ -71,68 +111,8 @@ export default function FloralMarketplace() {
                   price={350}
                   location="Boston, MA"
                   date="June 15, 2025"
-                  owner="Florist"
+                  owner="Couple"
                   tags={["centerpiece", "roses", "elegant"]}
-                />
-
-                <FloralCard
-                  id="floral-2"
-                  title="Rustic Wildflower Collection"
-                  description="15 mason jar arrangements with seasonal wildflowers and greenery."
-                  image="/placeholder.svg?height=400&width=600"
-                  price={275}
-                  location="Cambridge, MA"
-                  date="June 16, 2025"
-                  owner="Couple"
-                  tags={["wildflowers", "rustic", "mason jar"]}
-                />
-
-                <FloralCard
-                  id="floral-3"
-                  title="Tropical Paradise Arrangements"
-                  description="8 large arrangements featuring birds of paradise, orchids, and tropical greenery."
-                  image="/placeholder.svg?height=400&width=600"
-                  price={420}
-                  location="Somerville, MA"
-                  date="June 17, 2025"
-                  owner="Shared"
-                  tags={["tropical", "colorful", "statement"]}
-                />
-
-                <FloralCard
-                  id="floral-4"
-                  title="Minimalist Greenery Garlands"
-                  description="200ft of eucalyptus and olive branch garlands for table runners or arch decoration."
-                  image="/placeholder.svg?height=400&width=600"
-                  price={300}
-                  location="Brookline, MA"
-                  date="June 18, 2025"
-                  owner="Florist"
-                  tags={["greenery", "garland", "minimalist"]}
-                />
-
-                <FloralCard
-                  id="floral-5"
-                  title="Romantic Peony Bouquets"
-                  description="Bridal bouquet and 4 bridesmaid bouquets with peonies, garden roses, and ranunculus."
-                  image="/placeholder.svg?height=400&width=600"
-                  price={225}
-                  location="Newton, MA"
-                  date="June 19, 2025"
-                  owner="Couple"
-                  tags={["bouquet", "peonies", "romantic"]}
-                />
-
-                <FloralCard
-                  id="floral-6"
-                  title="Bohemian Dried Flower Installation"
-                  description="Large hanging installation with pampas grass, dried palms, and preserved flowers."
-                  image="/placeholder.svg?height=400&width=600"
-                  price={550}
-                  location="Medford, MA"
-                  date="June 20, 2025"
-                  owner="Shared"
-                  tags={["dried", "installation", "bohemian"]}
                 />
               </div>
             </TabsContent>
@@ -141,7 +121,9 @@ export default function FloralMarketplace() {
             <TabsContent value="upcoming" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Card className="flex items-center justify-center h-64 border-dashed">
-                  <p className="text-muted-foreground">More arrangements coming soon</p>
+                  <p className="text-muted-foreground">
+                    More arrangements coming soon
+                  </p>
                 </Card>
               </div>
             </TabsContent>
@@ -158,5 +140,5 @@ export default function FloralMarketplace() {
         </div>
       </main>
     </div>
-  )
+  );
 }

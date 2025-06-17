@@ -14,7 +14,7 @@ interface FloralCardProps {
   price: number
   location: string
   date: string
-  owner: "Florist" | "Couple" | "Shared"
+  owner: "Vendor" | "Couple" 
   tags: string[]
 }
 
@@ -22,12 +22,10 @@ export function FloralCard({ id, title, description, image, price, location, dat
   // Determine badge color based on owner type
   const getBadgeColor = (owner: string) => {
     switch (owner) {
-      case "Florist":
+      case "Vendor":
         return "bg-blue-100 text-blue-800 hover:bg-blue-100"
       case "Couple":
         return "bg-purple-100 text-purple-800 hover:bg-purple-100"
-      case "Shared":
-        return "bg-amber-100 text-amber-800 hover:bg-amber-100"
       default:
         return ""
     }
@@ -54,9 +52,8 @@ export function FloralCard({ id, title, description, image, price, location, dat
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-xs">
-                    {owner === "Florist" && "Owned by the florist, available for rental"}
+                    {owner === "Vendor" && "Owned by the Vendor, available for rental"}
                     {owner === "Couple" && "Owned by another couple, available for purchase"}
-                    {owner === "Shared" && "Shared ownership between multiple parties"}
                   </p>
                 </TooltipContent>
               </Tooltip>

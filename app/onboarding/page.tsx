@@ -71,7 +71,9 @@ export default function OnboardingPage() {
   // Loading and error states
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [tentPackageData, setTentPackageData] = useState<Partial<TentedPackage['Row']>| null>(null)
+  const [tentPackageData, setTentPackageData] = useState<Partial<
+    TentedPackage["Row"]
+  > | null>(null);
 
   // Validation states
   const [errors, setErrors] = useState<{
@@ -149,7 +151,7 @@ export default function OnboardingPage() {
     setIsLoading(true);
     setFormError(null);
     setTriggerAuthUseEffect((prev) => !prev);
-    let full_location = location.addressLabel+", "+location.formattedAddress
+    let full_location = location.formattedAddress;
     /**
      * Date needed to add tent package
      * name,
@@ -169,7 +171,6 @@ export default function OnboardingPage() {
 
       // 3. If user is a couple, create a wedding record
       if (userType === "couple") {
-
         let venueObject: AddVenueParams = {
           formattedAddress: location.formattedAddress,
           lat: location.latitude,
@@ -193,6 +194,12 @@ export default function OnboardingPage() {
           status: "planning",
           venue_id: venueData[0].id,
         });
+        
+        if (isTented && tentPackageData) {
+          tentPackageData.capacity = +guestCount;
+          tentPackageData.venue_id = venueData[0].id;
+          await AddTentedPackage(tentPackageData);
+        }
 
         if (weddingError) throw weddingError;
       }
@@ -223,11 +230,6 @@ export default function OnboardingPage() {
       }
       if (userId) {
         files.map(async (file) => await uploadAvenueToBucket(file, userId));
-      }
-      if(isTented && tentPackageData){
-        tentPackageData.capacity = +guestCount;
-        tentPackageData.venue_id = venueData[0].id
-        await AddTentedPackage(tentPackageData)
       }
 
       // Redirect to appropriate page based on user selection
@@ -507,9 +509,9 @@ export default function OnboardingPage() {
                               checked={isTented}
                               onCheckedChange={(checked) => {
                                 setIsTented(checked === true);
-                                if(!checked){
+                                if (!checked) {
                                   setTentPackageData(null);
-                                  setFiles([])
+                                  setFiles([]);
                                 }
                               }}
                               className="bg-white border border-gray-400"
@@ -524,7 +526,11 @@ export default function OnboardingPage() {
                           </div>
                           {isTented && (
                             <>
-                              <TentPackage setFiles={setFiles} setTentPackageData={setTentPackageData} tentedPackage={tentPackageData} />
+                              <TentPackage
+                                setFiles={setFiles}
+                                setTentPackageData={setTentPackageData}
+                                tentedPackage={tentPackageData}
+                              />
                             </>
                           )}
                         </>

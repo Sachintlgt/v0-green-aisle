@@ -43,3 +43,9 @@ export type Wedding = Database['public']['Tables']['weddings']
 export type TentedPackage = Database['public']['Tables']['tent_packages']
 
 export type FloralArrangement = Database['public']['Tables']['floral_arrangements'] 
+
+export type Products = Database['public']['Tables']['products']
+
+export type ProductsDetails = Products['Row'] &{
+  images: string[];
+}

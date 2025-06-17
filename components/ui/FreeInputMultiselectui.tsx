@@ -9,7 +9,7 @@ type FreeInputMultiSelectProps = {
   selected: string[];
   onChange: (selected: string[]) => void;
   placeholder?: string;
-  label?: string;
+  label?: string | React.ReactElement;
   max?: number;
 };
 
