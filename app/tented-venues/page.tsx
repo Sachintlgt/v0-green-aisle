@@ -26,7 +26,7 @@ export default function TentedVenuesPage() {
               href="/floral-marketplace"
               className="text-sm font-medium text-muted-foreground hover:text-foreground"
             >
-              Floral Marketplace
+              Marketplace
             </Link>
             <Link
               href="/vendor-coordination"

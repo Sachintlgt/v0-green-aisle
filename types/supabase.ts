@@ -200,9 +200,11 @@ export type Database = {
           description: string | null
           id: string
           location: string
+          original_price: number | null
           owner_id: string
+          owner_name: string | null
           owner_type: string
-          price: number
+          reuse_price: number
           status: string
           tags: string[] | null
           title: string
@@ -215,9 +217,11 @@ export type Database = {
           description?: string | null
           id?: string
           location: string
+          original_price?: number | null
           owner_id: string
+          owner_name?: string | null
           owner_type: string
-          price: number
+          reuse_price: number
           status?: string
           tags?: string[] | null
           title: string
@@ -230,9 +234,11 @@ export type Database = {
           description?: string | null
           id?: string
           location?: string
+          original_price?: number | null
           owner_id?: string
+          owner_name?: string | null
           owner_type?: string
-          price?: number
+          reuse_price?: number
           status?: string
           tags?: string[] | null
           title?: string

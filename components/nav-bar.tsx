@@ -15,8 +15,8 @@ function Navbar() {
       title: "Dashboard",
     },
     {
-      route: "/floral-marketplace",
-      title: "Floral Marketplace",
+      route: "/marketplace",
+      title: "Marketplace",
     },
     {
       route: "/vendor-coordination",

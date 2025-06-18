@@ -184,7 +184,7 @@ export default function Dashboard() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Floral Marketplace</CardTitle>
+                    <CardTitle>Marketplace</CardTitle>
                     <CardDescription>
                       Browse and reserve reusable floral arrangements.
                     </CardDescription>

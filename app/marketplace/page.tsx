@@ -49,7 +49,7 @@ export default function FloralMarketplace() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
-                Floral Marketplace
+                Marketplace
               </h1>
               <p className="text-muted-foreground mt-1">
                 Browse and reserve floral arrangements for reuse at your wedding.
@@ -110,7 +110,7 @@ export default function FloralMarketplace() {
                         val.images[0] ??
                         "/placeholder.svg?height=400&width=600"
                       }
-                      price={+val.price.toFixed(2)}
+                      price={+val.reuse_price?.toFixed(2)}
                       location={val.location}
                       date="June 15, 2025"
                       owner={val.owner_type === "couple" ? "Couple" : "Vendor"}

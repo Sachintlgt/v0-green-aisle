@@ -30,7 +30,7 @@ import DropZoneCard from "@/components/dropzone-card";
 import AddressAutoFieldEdit from "@/components/address-field-distribution";
 import AutoCompleteLocation from "@/components/auto-complete-location";
 import { useAuth } from "@/contexts/auth-context";
-import { FloralArrangement, Products } from "@/types/db";
+import { Products } from "@/types/db";
 import { AddListingINMarketPlace } from "@/services/db.service";
 import { uploadClientList } from "@/services/bucket.service";
 
@@ -39,13 +39,14 @@ export default function AddListingPage() {
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
-    type: "",          // category: floral/decor/tent/other
-    customType: "",    // free‑text when type === "other"
-    title: "",         // listing headline
+    type: "",
+    customType: "",
+    title: "",
     description: "",
-    price: "",
+    reusePrice: "",
+    originalPrice: "",
     date: undefined as Date | undefined,
-    owner: "",
+    ownerType: "",
     features: [] as string[],
   });
 
@@ -61,19 +62,23 @@ export default function AddListingPage() {
 
     const listingData: Products["Insert"] = {
       type:
-        formData.type === "other" ? formData.customType : formData.type,
-      title: formData.title,
-      description: formData.description,
-      price: parseFloat(formData.price),
+        formData.type === "other"
+          ? formData.customType.trim()
+          : formData.type,
+      title: formData.title.trim(),
+      description: formData.description || null,
+      reuse_price: Number(formData.reusePrice),
+      original_price: formData.originalPrice
+        ? Number(formData.originalPrice)
+        : null,
       date_available:
         formData.date?.toISOString() || new Date().toISOString(),
-      location:
-        location?.formattedAddress
-          ?`${location.formattedAddress}`
-          : "",
-      owner_type: formData.owner,
+      location: location?.formattedAddress || "",
+      owner_type: formData.ownerType,
       owner_id: user?.id || "",
-      tags: formData.features,
+      tags: formData.features.length ? formData.features : null,
+      status: "available",
+      owner_name: null, // capture elsewhere if needed
     };
 
     try {
@@ -81,7 +86,7 @@ export default function AddListingPage() {
 
       await Promise.all(files.map((file) => uploadClientList(file, data.id)));
 
-      router.replace("/floral-marketplace");
+      router.replace("/marketplace");
     } catch (error) {
       console.error("Submission error:", error);
     }
@@ -94,7 +99,6 @@ export default function AddListingPage() {
       <main className="flex-1 py-8">
         <div className="container max-w-3xl px-4">
           <Card className="p-6 shadow-md space-y-6 bg-white">
-            {/* Header */}
             <div>
               <h2 className="text-2xl font-semibold flex items-center gap-2">
                 <PlusCircle className="w-5 h-5 text-green-600" />
@@ -105,9 +109,8 @@ export default function AddListingPage() {
               </p>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* TYPE (category) */}
+              {/* Type */}
               <div className="space-y-1.5">
                 <Label htmlFor="type">
                   Type <span className="text-red-500">*</span>
@@ -128,7 +131,6 @@ export default function AddListingPage() {
                 </Select>
               </div>
 
-              {/* custom type when “Other” */}
               {formData.type === "other" && (
                 <div className="space-y-1.5">
                   <Label htmlFor="customType">
@@ -145,7 +147,7 @@ export default function AddListingPage() {
                 </div>
               )}
 
-              {/* LISTING TITLE */}
+              {/* Title */}
               <div className="space-y-1.5">
                 <Label htmlFor="title">
                   Listing Title <span className="text-red-500">*</span>
@@ -158,7 +160,7 @@ export default function AddListingPage() {
                 />
               </div>
 
-              {/* DESCRIPTION (optional) */}
+              {/* Description */}
               <div className="space-y-1.5">
                 <Label htmlFor="description">Description</Label>
                 <Input
@@ -171,21 +173,35 @@ export default function AddListingPage() {
                 />
               </div>
 
-              {/* PRICE */}
+              {/* Reuse Price */}
               <div className="space-y-1.5">
-                <Label htmlFor="price">
-                  Price ($) <span className="text-red-500">*</span>
+                <Label htmlFor="reusePrice">
+                  Reuse Price ($) <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="price"
+                  id="reusePrice"
                   type="number"
                   placeholder="e.g., 100"
-                  value={formData.price}
-                  onChange={(e) => handleChange("price", e.target.value)}
+                  value={formData.reusePrice}
+                  onChange={(e) => handleChange("reusePrice", e.target.value)}
                 />
               </div>
 
-              {/* LOCATION (autocomplete) */}
+              {/* Original Price */}
+              <div className="space-y-1.5">
+                <Label htmlFor="originalPrice">Original Price ($)</Label>
+                <Input
+                  id="originalPrice"
+                  type="number"
+                  placeholder="e.g., 250"
+                  value={formData.originalPrice}
+                  onChange={(e) =>
+                    handleChange("originalPrice", e.target.value)
+                  }
+                />
+              </div>
+
+              {/* Location */}
               <div className="space-y-1.5">
                 <Label htmlFor="location">
                   Location <span className="text-red-500">*</span>
@@ -204,10 +220,10 @@ export default function AddListingPage() {
                 )}
               </div>
 
-              {/* DATE AVAILABLE */}
+              {/* Date */}
               <div className="space-y-1.5">
                 <Label>
-                  Date <span className="text-red-500">*</span>
+                  Date Available <span className="text-red-500">*</span>
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -237,14 +253,14 @@ export default function AddListingPage() {
                 </Popover>
               </div>
 
-              {/* OWNER TYPE */}
+              {/* Owner Type */}
               <div className="space-y-1.5">
-                <Label htmlFor="owner">
+                <Label htmlFor="ownerType">
                   Owner <span className="text-red-500">*</span>
                 </Label>
                 <Select
-                  value={formData.owner}
-                  onValueChange={(val) => handleChange("owner", val)}
+                  value={formData.ownerType}
+                  onValueChange={(val) => handleChange("ownerType", val)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select owner type" />
@@ -256,12 +272,12 @@ export default function AddListingPage() {
                 </Select>
               </div>
 
-              {/* FILE UPLOAD (optional) */}
+              {/* File Upload */}
               <section>
                 <DropZoneCard setFiles={setFiles} onEdit />
               </section>
 
-              {/* TAGS / FEATURES (optional) */}
+              {/* Tags / Features */}
               <section>
                 <FreeInputMultiSelect
                   selected={formData.features}
@@ -275,7 +291,6 @@ export default function AddListingPage() {
                 />
               </section>
 
-              {/* SUBMIT */}
               <Button
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700 text-white"

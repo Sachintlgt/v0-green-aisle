@@ -49,7 +49,7 @@ const plans: SubscriptionPlan[] = [
     features: [
       "List up to 3 wedding services",
       "Basic profile customization",
-      "Access to floral marketplace",
+      "Access to marketplace",
       "Email support",
       "Basic analytics",
     ],

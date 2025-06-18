@@ -75,7 +75,7 @@ export default function TentedVenueDetailPage({ params }: { params: { id: string
               href="/floral-marketplace"
               className="text-sm font-medium text-muted-foreground hover:text-foreground"
             >
-              Floral Marketplace
+              Marketplace
             </Link>
             <Link
               href="/vendor-coordination"

@@ -188,7 +188,7 @@ export default function VendorDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Floral Marketplace</CardTitle>
+                <CardTitle>Marketplace</CardTitle>
                 <CardDescription>
                   List your floral arrangements for reuse and coordinate with couples.
                 </CardDescription>

@@ -47,6 +47,10 @@ import { listFiles } from "@/services/bucket.service";
 import debounce from "lodash.debounce";
 import LogoutButton from "@/components/ui/logout-button";
 import Navbar from "@/components/nav-bar";
+import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 interface CoupleMatch {
   id: string;
@@ -109,7 +113,7 @@ const mockMatches: CoupleMatch[] = [
 export default function CoupleMatchingPage() {
   const { user, signOut } = useAuth();
   const [matches, setMatches] = useState<CoupleMatch[]>(mockMatches);
-  const [filterDistance, setFilterDistance] = useState<string>("6");
+  const [filterDistance, setFilterDistance] = useState<number>(5);
   const [filterItems, setFilterItems] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [newMatch, setNewMatch] = useState<any>([]);
@@ -190,7 +194,7 @@ export default function CoupleMatchingPage() {
                 /** We need to get user profile details & fetch his image & thier wedding date */
 
                 const profile = await getProfileById(detail.created_by);
-                const files = await listFiles(detail.created_by, 'avenue');
+                const files = await listFiles(detail.created_by, "avenue");
                 const weddingDate = await getUpcomingWeddings(
                   detail.created_by,
                   clientWeddingDate
@@ -246,58 +250,52 @@ export default function CoupleMatchingPage() {
 
           {/* Filters */}
           <Card className="mb-6">
+            {/* Header */}
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Search & Filter Matches
+              <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                <Filter className="h-5 w-5 shrink-0" />
+                <span>Search & Filter Matches</span>
               </CardTitle>
             </CardHeader>
+
+            {/* Content */}
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* <div>
-                  <Input
-                    // placeholder="Search couples, venues, locations..."
-                    placeholder="Search city..."
-                    // value={searchTerm}
-                    onChange={(e) => debounceSearchTerm(e.target.value)}
+              <form className="grid gap-6 md:grid-cols-4 sm:grid-cols-2">
+                {/* Distance Slider */}
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="distance-slider">
+                    {filterDistance === 0
+                      ? "All distances"
+                      : `Within ${filterDistance} miles`}
+                  </Label>
+                  <Slider
+                    id="distance-slider"
+                    min={0}
+                    max={10}
+                    step={1}
+                    value={[filterDistance]}
+                    onValueChange={([v]) => setFilterDistance(v)}
+                    className={cn(
+                      "w-full",
+                      // Track
+                      "[&_[data-orientation=horizontal]]:h-1 [&_[data-orientation=horizontal]]:bg-slate-300",
+                      // Filled range
+                      "[&_[data-radix-slider-range]]:bg-emerald-600 [&_[data-radix-slider-range]]:shadow-inner",
+                      // Thumb
+                      "[&_[role=slider]]:h-4 [&_[role=slider]]:w-4 [&_[role=slider]]:drop-shadow"
+                    )}
                   />
-                </div> */}
-                <div>
-                  <Select
-                    value={filterDistance}
-                    onValueChange={setFilterDistance}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Distance" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="6">All Distances</SelectItem>
-                      <SelectItem value="5">Within 5 miles</SelectItem>
-                      <SelectItem value="10">Within 10 miles</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
-                {/* <div>
-                  <Select value={filterItems} onValueChange={setFilterItems}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Item Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Items</SelectItem>
-                      <SelectItem value="florals">Florals</SelectItem>
-                      <SelectItem value="tents">Tents</SelectItem>
-                      <SelectItem value="lounge">Lounge</SelectItem>
-                      <SelectItem value="decor">Decor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div> */}
-                <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-green-600" />
-                  <span className="text-sm text-muted-foreground">
-                    {newMatch.length} matches found
-                  </span>
+
+
+                {/* Match Count */}
+                <div className="flex flex-col justify-end">
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Heart className="h-4 w-4 text-emerald-600" />
+                    <span>23 matches found</span>
+                  </p>
                 </div>
-              </div>
+              </form>
             </CardContent>
           </Card>
 

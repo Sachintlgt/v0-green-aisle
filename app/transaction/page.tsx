@@ -26,7 +26,7 @@ export default function TransactionPage() {
               href="/floral-marketplace"
               className="text-sm font-medium text-muted-foreground hover:text-foreground"
             >
-              Floral Marketplace
+              Marketplace
             </Link>
             <Link href="/vendors" className="text-sm font-medium text-muted-foreground hover:text-foreground">
               Vendors
