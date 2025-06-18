@@ -194,7 +194,7 @@ export default function OnboardingPage() {
           status: "planning",
           venue_id: venueData[0].id,
         });
-        
+
         if (isTented && tentPackageData) {
           tentPackageData.capacity = +guestCount;
           tentPackageData.venue_id = venueData[0].id;
@@ -604,27 +604,72 @@ export default function OnboardingPage() {
                       </div>
 
                       <div className="grid gap-2">
-                        <Label htmlFor="business-type">Business Type</Label>
+                        <Label htmlFor="business-name">Business Name</Label>
+                        <Input
+                          id="business-name"
+                          placeholder="Your business name"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="grid gap-2">
+                        <Label htmlFor="rental-type">Rental Type</Label>
                         <RadioGroup
                           defaultValue="florist"
                           value={businessType}
                           onValueChange={setBusinessType}
                         >
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="florist" id="florist" />
-                            <Label htmlFor="florist">Florist</Label>
+                            <RadioGroupItem value="tent" id="tent" />
+                            <Label htmlFor="tent">Tent</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="caterer" id="caterer" />
-                            <Label htmlFor="caterer">Caterer</Label>
+                            <RadioGroupItem
+                              value="tent-flooring"
+                              id="tent-flooring"
+                            />
+                            <Label htmlFor="tent-flooring">Tent Flooring</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="venue" id="venue" />
-                            <Label htmlFor="venue">Venue</Label>
+                            <RadioGroupItem
+                              value="dance-floor"
+                              id="dance-floor"
+                            />
+                            <Label htmlFor="dance-floor">Dance Floor</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="other" id="other" />
-                            <Label htmlFor="other">Other</Label>
+                            <RadioGroupItem value="lighting" id="lighting" />
+                            <Label htmlFor="lighting">
+                              Lighting / Chandeliers
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="generator" id="generator" />
+                            <Label htmlFor="generator">
+                              Generator / Power Source
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="liners" id="liners" />
+                            <Label htmlFor="liners">Liners or Sidewalls</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="heaters" id="heaters" />
+                            <Label htmlFor="heaters">Heaters or Fans</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value="structures"
+                              id="structures"
+                            />
+                            <Label htmlFor="structures">
+                              Additional Structures
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="others" id="others" />
+                            <Label htmlFor="others">Others</Label>
                           </div>
                         </RadioGroup>
                       </div>

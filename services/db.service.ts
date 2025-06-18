@@ -263,26 +263,53 @@ export async function AddListingINMarketPlace(
   }
 }
 
-export async function GetProducts(userId: string): Promise<ProductsDetails[]> {
+export async function GetProducts(
+  userId: string,
+  filter: string = "*"
+): Promise<ProductsDetails[]> {
   try {
-    const { data, error } = await supabase.from("products").select().neq("owner_id", userId);
+    // ── 1. Base query: everything NOT owned by the current user ────────────────
+    let query = supabase
+      .from("products")
+      .select("*") // include * if you need every column, otherwise list columns explicitly
+      .neq("owner_id", userId);
 
+    // ── 2. Apply the `filter` logic described in the comment ───────────────────
+    if (filter === "*") {
+      // no extra condition → all types
+    } else if (filter === "other") {
+      // everything EXCEPT tent, decor, floral
+      const excluded = ["tent", "decor", "floral"];
+      query = query.not(
+        "type",
+        "in",
+        `(${excluded.map((t) => `"${t}"`).join(",")})`
+      );
+    } else {
+      // specific type (floral, decor, tent, etc.)
+      query = query.eq("type", filter);
+    }
+
+    // ── 3. Execute the query ───────────────────────────────────────────────────
+    const { data, error } = await query;
     if (error) throw error;
     if (!data) return [];
 
+    // ── 4. Load images for each product ────────────────────────────────────────
     const productDetails = await Promise.all(
-      data.map(async (val: Products["Row"]) => {
-        let images =
-          (await listFiles(val.id, "list"))?.filter(
+      data.map(async (prod: Products["Row"]) => {
+        const images =
+          (await listFiles(prod.id, "list"))?.filter(
             (img): img is string => img !== null
           ) ?? [];
-        return { ...val, images };
+        return { ...prod, images };
       })
     );
 
     return productDetails;
-  } catch (error) {
-    console.error("Error fetching products:", error);
+  } catch (err) {
+    console.error("Error fetching products:", err);
     return [];
   }
 }
+

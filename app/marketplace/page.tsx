@@ -5,21 +5,18 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Filter, Plus, Loader2 } from "lucide-react";
 import { FloralCard } from "@/components/floral-card";
 import Navbar from "@/components/nav-bar";
 import { ProductsDetails } from "@/types/db";
 import { GetProducts } from "@/services/db.service";
 import { useAuth } from "@/contexts/auth-context";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function FloralMarketplace() {
   const [data, setData] = useState<ProductsDetails[]>([]);
+  const [filter, setfilter] = useState('*')
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
@@ -28,16 +25,18 @@ export default function FloralMarketplace() {
       (async () => {
         try {
           setLoading(true);
-          const products = await GetProducts(user.id);
+          const products = await GetProducts(user.id, filter);
           setData(products);
         } catch (error: any) {
-          alert(error.message ?? "Something went wrong while fetching products");
+          alert(
+            error.message ?? "Something went wrong while fetching products"
+          );
         } finally {
           setLoading(false);
         }
       })();
     }
-  }, [user]);
+  }, [user, filter]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -48,24 +47,38 @@ export default function FloralMarketplace() {
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                Marketplace
-              </h1>
+              <h1 className="text-3xl font-bold tracking-tight">Marketplace</h1>
               <p className="text-muted-foreground mt-1">
-                Browse and reserve floral arrangements for reuse at your wedding.
+                Browse and reserve floral arrangements for reuse at your
+                wedding.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
               {/* Search */}
-              <div className="relative">
+              {/* <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search arrangements..."
                   className="w-[180px] md:w-[200px] lg:w-[250px] pl-8"
                 />
-              </div>
+              </div> */}
+              <Select
+                value={filter}
+                onValueChange={(val) => setfilter(val)}
+              >
+                <SelectTrigger className="w-[180px] md:w-[200px] lg:w-[250px]">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="*">Select all</SelectItem>
+                  <SelectItem value="floral">Floral</SelectItem>
+                  <SelectItem value="decor">Decor</SelectItem>
+                  <SelectItem value="tent">Tent</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
 
               {/* Filter */}
               <Button variant="outline" size="icon">
@@ -96,7 +109,7 @@ export default function FloralMarketplace() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
                   <div className="flex justify-center items-center col-span-full min-h-[70vh] ">
-                     <div className="loader"/>
+                    <div className="loader" />
                     {/* <Loader2 className="h-10 w-10 text-green-600 animate-spin" /> */}
                   </div>
                 ) : (
@@ -107,16 +120,15 @@ export default function FloralMarketplace() {
                       title={val.title}
                       description={val.description ?? ""}
                       image={
-                        val.images[0] ??
-                        "/placeholder.svg?height=400&width=600"
+                        val.images[0] ?? "/placeholder.svg?height=400&width=600"
                       }
                       price={+val.reuse_price?.toFixed(2)}
                       original_price={
-                        val.original_price !== null && val.original_price !== undefined
+                        val.original_price !== null &&
+                        val.original_price !== undefined
                           ? +Number(val.original_price).toFixed(2)
                           : undefined
                       }
-                      
                       owner_name={val.owner_name}
                       location={val.location}
                       date="June 15, 2025"
@@ -143,9 +155,7 @@ export default function FloralMarketplace() {
             <TabsContent value="all" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Card className="flex items-center justify-center h-64 border-dashed">
-                  <p className="text-muted-foreground">
-                    View all arrangements
-                  </p>
+                  <p className="text-muted-foreground">View all arrangements</p>
                 </Card>
               </div>
             </TabsContent>
