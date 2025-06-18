@@ -111,6 +111,13 @@ export default function FloralMarketplace() {
                         "/placeholder.svg?height=400&width=600"
                       }
                       price={+val.reuse_price?.toFixed(2)}
+                      original_price={
+                        val.original_price !== null && val.original_price !== undefined
+                          ? +Number(val.original_price).toFixed(2)
+                          : undefined
+                      }
+                      
+                      owner_name={val.owner_name}
                       location={val.location}
                       date="June 15, 2025"
                       owner={val.owner_type === "couple" ? "Couple" : "Vendor"}

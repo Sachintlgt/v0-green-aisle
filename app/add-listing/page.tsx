@@ -78,7 +78,7 @@ export default function AddListingPage() {
       owner_id: user?.id || "",
       tags: formData.features.length ? formData.features : null,
       status: "available",
-      owner_name: null, // capture elsewhere if needed
+      owner_name: user?.user_metadata?.full_name ?? "", // capture elsewhere if needed
     };
 
     try {
@@ -172,23 +172,8 @@ export default function AddListingPage() {
                   }
                 />
               </div>
-
-              {/* Reuse Price */}
-              <div className="space-y-1.5">
-                <Label htmlFor="reusePrice">
-                  Reuse Price ($) <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="reusePrice"
-                  type="number"
-                  placeholder="e.g., 100"
-                  value={formData.reusePrice}
-                  onChange={(e) => handleChange("reusePrice", e.target.value)}
-                />
-              </div>
-
-              {/* Original Price */}
-              <div className="space-y-1.5">
+               {/* Original Price */}
+               <div className="space-y-1.5">
                 <Label htmlFor="originalPrice">Original Price ($)</Label>
                 <Input
                   id="originalPrice"
@@ -200,6 +185,23 @@ export default function AddListingPage() {
                   }
                 />
               </div>
+
+              {/* Reuse Price */}
+           { formData.originalPrice && <div className="space-y-1.5">
+                <Label htmlFor="reusePrice">
+                  Reuse Price ($) <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="reusePrice"
+                  type="number"
+                  placeholder={`Quote lower than ${formData.originalPrice}`}
+                  maxLength={+formData.originalPrice}
+                  value={formData.reusePrice}
+                  onChange={(e) => handleChange("reusePrice", e.target.value)}
+                />
+              </div>}
+
+             
 
               {/* Location */}
               <div className="space-y-1.5">
