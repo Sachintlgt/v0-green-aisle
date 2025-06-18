@@ -25,6 +25,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
+import LogoutButton from "@/components/ui/logout-button";
 
 interface SubscriptionPlan {
   id: string;
@@ -47,7 +48,7 @@ const plans: SubscriptionPlan[] = [
     price: "$0",
     interval: "forever",
     features: [
-      "List up to 3 wedding services",
+      "List up to 1 wedding services",
       "Basic profile customization",
       "Access to marketplace",
       "Email support",
@@ -64,7 +65,7 @@ const plans: SubscriptionPlan[] = [
     price: "$29",
     interval: "month",
     features: [
-      "Unlimited wedding services",
+      "List up to 10 wedding services",
       "Advanced profile customization",
       "Priority marketplace placement",
       "Couple coordination tools",
@@ -84,7 +85,7 @@ const plans: SubscriptionPlan[] = [
     price: "$99",
     interval: "month",
     features: [
-      "Everything in Pro Plan",
+      "Unlimited wedding services",
       "Unlimited marketplace listings",
       "Advanced couple matching",
       "White-label solutions",
@@ -127,7 +128,7 @@ export default function SubscriptionPlansPage() {
           },
           body: JSON.stringify({ 
             planId,
-            planName: 'Free Plan'
+            planName: '1'
           }),
         });
 
@@ -181,11 +182,12 @@ export default function SubscriptionPlansPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
+        <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Leaf className="h-6 w-6 text-green-600" />
             <span className="text-xl font-semibold">Green Aisle</span>
           </Link>
+          <LogoutButton />
         </div>
       </header>
 

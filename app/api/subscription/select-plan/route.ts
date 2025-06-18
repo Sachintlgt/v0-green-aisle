@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await supabaseServer
       .from('vendors')
       .update({ 
-        subscription_tier: planName,
+        plan_type: planName,
         subscription_plan_id: planId,
         subscription_status: 'active',
         updated_at: new Date().toISOString()
